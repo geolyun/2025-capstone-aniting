@@ -14,30 +14,39 @@
 </head>
 
 <body class="g-sidenav-show bg-gray-100 virtual-reality">
-  <div>
-    <!-- Navbar -->
-    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl">
-      <div class="container-fluid py-1 px-3">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="#">Aniting</a></li>
-          </ol>
-          <h6 class="font-weight-bolder mb-0">마이페이지</h6>
-        </nav>
-        <div class="collapse navbar-collapse justify-content-end" id="navbar">
-          <ul class="navbar-nav d-flex flex-row">
-            <li class="nav-item d-flex align-items-center me-3">
-              <a href="#" class="nav-link text-body font-weight-bold px-2"><i class="fa fa-home me-1"></i>홈</a>
-            </li>
-            <li class="nav-item d-flex align-items-center">
-              <a href="#" class="nav-link text-body font-weight-bold px-2"><i class="fa fa-sign-out-alt me-1"></i>로그아웃</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <!-- End Navbar -->
-  </div>
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+	  <div class="container-fluid py-2 px-3 d-flex justify-content-between align-items-center">
+	
+	    <!-- 로고 + 텍스트 (chat 페이지로 이동) -->
+	    <a href="/chat" class="d-flex align-items-center text-decoration-none">
+	      <!-- 원형 로고 이미지 -->
+	      <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; margin-right: 12px;">
+	        <img src="images/logo.png" alt="로고" style="width: 100%; height: 100%; object-fit: cover;">
+	      </div>
+	      <!-- 텍스트 2줄 -->
+	      <div class="d-flex flex-column justify-content-center">
+	        <span class="text-muted small mb-0">Aniting</span>
+	        <span class="fw-bold fs-6">반려동물 추천 지도</span>
+	      </div>
+	    </a>
+	
+	    <!-- 마이페이지 / 로그아웃 버튼 -->
+	    <div class="collapse navbar-collapse justify-content-end" id="navbar">
+	      <ul class="navbar-nav d-flex flex-row">
+	        <li class="nav-item d-flex align-items-center me-3">
+	          <a href="/chat" class="nav-link text-body font-weight-bold px-2">
+	            <i class="fa fa-user me-1"></i> 채팅
+	          </a>
+	        </li>
+	        <li class="nav-item d-flex align-items-center">
+	          <a href="/logout" class="nav-link text-body font-weight-bold px-2">
+	            <i class="fa fa-sign-out-alt me-1"></i> 로그아웃
+	          </a>
+	        </li>
+	      </ul>
+	    </div>
+	  </div>
+	</nav>
 
   <!-- Main Content -->
   <div class="border-radius-xl mt-3 mx-3 position-relative" style="background-image: url('../assets/img/vr-bg.jpg'); background-size: cover;">
@@ -61,7 +70,6 @@
                       <h5 class="text-dark mb-3"><i class="fas fa-id-card me-2 text-primary"></i>회원 정보</h5>
                       <p><strong>아이디:</strong> aniting_user123</p>
                       <p><strong>이름:</strong> 홍길동</p>
-                      <p><strong>이메일:</strong> aniting@example.com</p>
 
                       <div class="d-flex gap-3 mt-3">
                         <a href="/mypage/edit" class="btn btn-sm bg-gradient-info text-white px-4">회원정보 수정</a>
