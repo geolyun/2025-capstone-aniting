@@ -1,0 +1,38 @@
+package com.example.aniting.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "RECOMMEND_HISTORY")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RecommendHistory {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "HISTORY_ID")
+    private Long historyId; // 추천 히스토리 고유 ID
+
+    @Column(name = "USER_ID", nullable = false, length = 20)
+    private String userId; // 사용자 ID (USER 참조)
+
+    @Column(name = "TOP1_PET_ID", nullable = false)
+    private Long top1PetId; // AI가 추천한 1순위 반려동물 ID
+
+    @Column(name = "TOP2_PET_ID")
+    private Long top2PetId; // AI가 추천한 2순위 반려동물 ID
+
+    @Column(name = "TOP3_PET_ID")
+    private Long top3PetId; // AI가 추천한 3순위 반려동물 ID
+
+    @Column(name = "AI_REASON", columnDefinition = "TEXT")
+    private String aiReason; // AI의 추천 사유
+
+    @Column(name = "CREATED_AT", nullable = false)
+    private LocalDateTime createdAt; // 생성 시각
+}
+
