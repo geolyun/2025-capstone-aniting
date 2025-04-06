@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>애니팅 | 반려동물 추천 AI</title>
+
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <style>
+    .login-wrapper {
+      background: white;
+      border-radius: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      max-width: 100%;
+    }
+    .welcome-box {
+      background: linear-gradient(135deg, #fff1c1, #fdd49a);
+      border-radius: 25px;
+      padding: 1.5rem;
+      min-width: 260px;
+      max-width: 320px;
+      flex: 1 1 0;
+    }
+    .login-box input {
+      background: #fff8dc;
+    }
+    .login-box button {
+      background: linear-gradient(135deg, #ffd95c, #ff8c00);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    @media (max-width: 768px) {
+      .login-wrapper {
+        flex-direction: column !important;
+        padding: 1.5rem;
+      }
+      .welcome-box {
+        margin-bottom: 1rem;
+        border-radius: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero_area">
+    <!-- Header -->
+    <header class="header_section">
+      <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg custom_nav-container">
+          <a class="navbar-brand" href="login">
+            <img src="images/logo.png" alt="logo">
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main section -->
+    <section class="slider_section">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="col-md-6 offset-md-1">
+            <div class="login-wrapper d-flex flex-md-row flex-column align-items-start justify-content-between flex-wrap gap-3">
+
+              <!-- Welcome message (login과 동일) -->
+              <div class="welcome-box p-5 me-md-4 mb-4 mb-md-0">
+                <h4 class="fw-bold mb-4">애니팅에 오신 걸 환영해요</h4>
+                <h5 class="fw-semibold mb-3">당신에게 딱 맞는 반려동물을 찾아드릴게요</h5>
+                <p class="text-dark mb-0" style="line-height: 1.8;">
+                  애니팅은 AI 분석을 통해<br>
+                  당신의 성격, 환경, 생활 스타일에 꼭 맞는<br>
+                  반려동물을 추천해주는 서비스입니다 🐾<br><br>
+                  지금 바로 나만의 반려동물을 찾아보세요!
+                </p>
+              </div>
+
+              <!-- 회원가입 폼 -->
+              <div class="login-box" style="max-width: 340px; width: 100%;">
+                <h6 class="text-end fw-bold mb-3" style="color: #ff8c00;">SIGN UP</h6>
+                <form>
+                  <div class="mb-2">
+                    <label class="form-label small">이름</label>
+                    <input type="text" class="form-control rounded-pill px-3 py-1 shadow-sm" placeholder="이름 입력" style="font-size: 0.85rem;">
+                  </div>
+                  <div class="mb-2">
+				    <label class="form-label small">아이디</label>
+				    <input type="text" class="form-control rounded-pill px-3 py-1 shadow-sm" placeholder="아이디 입력" style="font-size: 0.85rem;">
+				  </div>
+                  <div class="mb-2">
+                    <label class="form-label small">비밀번호</label>
+                    <input type="password" class="form-control rounded-pill px-3 py-1 shadow-sm" placeholder="비밀번호 입력" style="font-size: 0.85rem;">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small">비밀번호 확인</label>
+                    <input type="password" class="form-control rounded-pill px-3 py-1 shadow-sm" placeholder="비밀번호 재입력" style="font-size: 0.85rem;">
+                  </div>
+                  <div class="mb-2">
+				    <label class="form-label small">보안 질문</label>
+				    <select class="form-select rounded-pill px-3 py-1 shadow-sm custom-orange-select" required style="font-size: 0.85rem;">
+				      <option selected disabled>질문을 선택하세요</option>
+				      <option>기억에 남는 초등학교 이름은?</option>
+				      <option>처음 키운 반려동물 이름은?</option>
+				      <option>좋아하는 동물은?</option>
+				    </select>
+				  </div>
+				  <div class="mb-3">
+				    <label class="form-label small">답변</label>
+				    <input type="text" class="form-control rounded-pill px-3 py-1 shadow-sm" placeholder="질문에 대한 답변 입력" required style="font-size: 0.85rem;">
+				  </div>
+                  <div class="form-check mb-3 small">
+                    <input type="checkbox" class="form-check-input" id="agree" required>
+                    <label class="form-check-label" for="agree">
+                      <a href="login" data-bs-toggle="modal" data-bs-target="#privacyModal" class="text-decoration-underline text-dark">개인정보 수집 및 이용</a>에 동의합니다.
+                    </label>
+                  </div>
+                  <button type="submit" class="btn w-100 py-2 rounded-pill text-white fw-semibold" style="font-size: 0.9rem;">회원가입</button>
+                  <p class="text-center mt-3 text-muted small">
+                    이미 계정이 있으신가요?
+                    <a href="login" class="fw-semibold text-decoration-none" style="color: #ff8c00;">로그인</a>
+                  </p>
+                </form>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 이미지 일러스트 -->
+          <div class="col-md-4">
+            <div class="img-box text-center">
+              <img src="images/slider-img.png" alt="반려동물 일러스트" class="img-fluid">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 개인정보 수집 모달 -->
+  <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="privacyModalLabel">개인정보 수집 및 이용 동의서</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+        </div>
+        <div class="modal-body">
+          <p>애니팅(Anithing)은 AI 기반 반려동물 추천 서비스를 제공하기 위해 아래와 같이 귀하의 개인정보를 수집·이용합니다.</p>
+          <table class="table table-bordered table-sm align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>수집 항목</th>
+                <th>수집 목적</th>
+                <th>보유 및 이용 기간</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>이름, 아이디, 성별, 보안질문</td>
+                <td>회원 식별 및 맞춤형 추천 제공</td>
+                <td>회원 탈퇴 시까지 또는 관련 법령 기준</td>
+              </tr>
+              <tr>
+                <td>성향 분석 답변, GPT 추천 대화 내용</td>
+                <td>AI 추천 알고리즘 학습, 서비스 개선</td>
+                <td>회원 탈퇴 시까지 또는 관련 법령 기준</td>
+              </tr>
+              <tr>
+                <td>접속 로그, 브라우저 정보, 쿠키</td>
+                <td>보안 관리, 이용 통계 분석, 사용자 경험 개선</td>
+                <td>수집일로부터 1년</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="mt-3">※ 본 서비스는 귀하의 성격, 생활 방식, 취향 등 민감한 성향 데이터를 수집할 수 있으며, 이는 오직 반려동물 추천 목적의 AI 분석에만 사용됩니다.</p>
+          <p>※ 귀하의 개인정보는 <strong>외부 제3자에게 제공되지 않으며</strong>, 애니팅 서비스 운영 및 고도화 목적에 한하여 내부에서만 사용됩니다.</p>
+          <p class="fw-bold">※ 귀하는 개인정보 수집 및 이용에 대한 동의를 거부할 권리가 있으며, 다만 이 경우 서비스 이용(회원가입 포함)이 제한될 수 있습니다.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

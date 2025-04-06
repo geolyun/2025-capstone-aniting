@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="shortcut icon" href="/admin_assets/img/icons/icon-48x48.png" />
+
+	<link rel="canonical" href="https://demo-basic.adminkit.io/pages-sign-in.html" />
+
+	<title>애니팅 | 관리자 로그인</title>
+
+	<link href="/admin_assets/css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+	
+	<script src="/admin_assets/js/jquery-3.7.1.min.js"></script>
+</head>
+
+<script>
+	$(document).ready(function () {
+		$("#adminLoginForm").submit(function (event) {
+			event.preventDefault();
+
+			let adminData = {
+				adminId: $("#adminId").val(),
+				passwd: $("#passwd").val()
+			};
+
+			$.ajax({
+				url: "/api/admin/auth/adminLogin",
+				type: "POST",
+				contentType: "application/json",
+				data: JSON.stringify(adminData),
+				success: function (response) {
+					if (response.success) {
+						alert(response.message);
+						window.location.href = "/admin/main";
+					} else {
+						$("#loginMessage").text(response.message);
+					}
+				},
+				error: function () {
+					$("#loginMessage").text("서버 오류가 발생했습니다. 다시 시도해주세요.");
+				}
+			});
+		});
+	});
+</script>
+
+<body>
+	<main class="d-flex w-100">
+		<div class="container d-flex flex-column">
+			<div class="row vh-100">
+				<div class="col-sm-10 col-md-8 col-lg-6 mx-auto d-table h-100">
+					<div class="d-table-cell align-middle">
+
+						<div class="text-center mt-4">
+							<h1 class="h2">애니팅 관리자 로그인</h1>
+							<p class="lead">관리자 계정으로 로그인하세요</p>
+						</div>
+
+						<div class="card">
+							<div class="card-body">
+								<div class="m-sm-4">
+									<form id="adminLoginForm">
+										<div class="mb-3">
+											<label class="form-label">아이디</label>
+											<input id="adminId" class="form-control form-control-lg" type="text" placeholder="아이디를 입력하세요" required />
+										</div>
+										<div class="mb-3">
+											<label class="form-label">비밀번호</label>
+											<input id="passwd" class="form-control form-control-lg" type="password" placeholder="비밀번호를 입력하세요" required />
+										</div>
+										<div class="text-center mt-3">
+											<button type="submit" class="btn btn-lg btn-primary w-100">로그인</button>
+										</div>
+									</form>
+								</div>
+								<p id="loginMessage" class="text-danger text-center mt-3"></p>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script src="/admin_assets/js/app.js"></script>
+</body>
+</html>

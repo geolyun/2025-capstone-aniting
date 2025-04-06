@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout/adminLayout.html}">
+
+<div layout:fragment="content">
+    <main class="content">
+        <div class="container-fluid">
+            <h1 class="h3 mb-3">카테고리 관리</h1>
+
+            <!-- 안내 텍스트 -->
+            <div class="alert alert-info">
+                추천을 위한 질문들이 속한 분류(예: 활동성, 털 빠짐 등)를 관리합니다.  
+                아직 확정된 구조는 없으므로 임시로 작성된 화면입니다.
+            </div>
+
+            <!-- 등록 폼 (추후 기능 확장 예정) -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" placeholder="새 카테고리명 입력">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100">등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 카테고리 테이블 -->
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>카테고리명</th>
+                                <th>질문 예시</th>
+                                <th>수정</th>
+                                <th>삭제</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>활동성</td>
+                                <td>집에 자주 계신가요?</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-warning">수정</button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-danger">삭제</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>털 빠짐 정도</td>
+                                <td>털 날림에 예민하신가요?</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-warning">수정</button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-danger">삭제</button>
+                                </td>
+                            </tr>
+                            <!-- 더미 데이터 추가 가능 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+</html>

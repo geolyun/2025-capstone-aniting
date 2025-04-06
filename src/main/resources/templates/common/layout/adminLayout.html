@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="utf-8">
+    <title>애니팅 | 반려동물 추천 AI</title>
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="shortcut icon" href="/admin_assets/img/icons/icon-48x48.png" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="/admin_assets/css/app.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <script src="/admin_assets/js/jquery-3.7.1.min.js"></script>
+    <script src="/admin_assets/js/app.js"></script>
+    
+    <style>
+        /* 테이블 스타일 */
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-custom th, .table-custom td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table-custom th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .table-custom tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        /* 필터 및 검색바 스타일 */
+        .filters .row {
+		    display: flex;
+		    align-items: center; /* 세로 중앙 정렬 */
+		    gap: 10px; /* 필터 간 간격 */
+		    margin-bottom: 10px; /* 아래 간격 */
+		}
+		
+		.filters .row > div {
+		    display: flex;
+		    align-items: center;
+		    gap: 5px; /* label과 input 사이 간격 */
+		}
+		
+		.filters label {
+		    font-size: 14px;
+		    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+		    margin-right: 5px; /* input과 간격 */
+		}
+		
+		.filters .col,
+		.filters .col-auto {
+		    flex: 1; /* 동일한 비율로 배치 */
+		}
+		
+		.filters .col-auto {
+		    flex: 0; /* 라벨 크기 고정 */
+		}
+		
+		.filters select,
+		.filters input {
+		    width: 100%; /* 입력 필드 및 버튼 전체 너비 사용 */
+		    padding: 8px;
+		    border-radius: 6px;
+		    border: 1px solid #ccc;
+		    font-size: 14px;
+		}
+		
+		.filters button {
+		    width: auto; /* 텍스트 크기에 맞게 자동 조정 */
+		    padding: 6px 12px; /* 버튼 안쪽 여백 조정 */
+		    font-size: 14px; /* 텍스트 크기 */
+		    border-radius: 6px; /* 모서리 둥글게 */
+		}
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            width: 400px;
+        }
+
+    </style>
+    
+</head>
+
+<body>
+
+<div class="wrapper">
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-content">
+            <a class="sidebar-brand" href="/admin/main">
+                <span>애니팅 관리자</span>
+            </a>
+            <ul class="sidebar-nav">
+			    <li class="sidebar-header">관리 메뉴</li>
+			    <li class="sidebar-item">
+			        <a class="sidebar-link" href="/admin/main">
+			            <i data-feather="bar-chart-2"></i> 대시보드
+			        </a>
+			    </li>
+			    <li class="sidebar-item">
+			        <a class="sidebar-link" href="/admin/users">
+			            <i data-feather="users"></i> 유저 관리
+			        </a>
+			    </li>
+			    <li class="sidebar-item">
+			        <a class="sidebar-link" href="/admin/pets">
+			            <i data-feather="heart"></i> 반려동물 관리
+			        </a>
+			    </li>
+			    <li class="sidebar-item">
+			        <a class="sidebar-link" href="/admin/categories">
+			            <i data-feather="layers"></i> 카테고리 관리
+			        </a>
+			    </li>
+			    <li class="sidebar-item">
+			        <a class="sidebar-link" href="/admin/responses">
+			            <i data-feather="message-square"></i> 추천 응답 관리
+			        </a>
+			    </li>
+			    <li class="sidebar-item">
+			        <a class="sidebar-link" href="/admin/logs">
+			            <i data-feather="file-text"></i> 추천 로그 관리
+			        </a>
+			    </li>
+			    <li class="sidebar-item">
+			        <a class="sidebar-link" href="/admin/history">
+			            <i data-feather="award"></i> 추천 결과 관리
+			        </a>
+			    </li>
+			    <li class="sidebar-item">
+			        <a class="sidebar-link" href="#" id="logoutBtn">
+			            <i data-feather="log-out"></i> 로그아웃
+			        </a>
+			    </li>
+			</ul>
+
+        </div>
+    </nav>
+
+    <div class="main">
+        <nav class="navbar navbar-expand navbar-light bg-light">
+            <div class="container-fluid">
+                <span class="navbar-brand">애니팅 관리자</span>
+            </div>
+        </nav>
+
+        <!-- 페이지별 콘텐츠 삽입 영역 -->
+        <main layout:fragment="content"></main>
+
+        <footer class="footer mt-auto py-3 bg-light">
+            <div class="container-fluid">
+                <span class="text-muted">&copy; 애니팅 관리자 페이지</span>
+            </div>
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>

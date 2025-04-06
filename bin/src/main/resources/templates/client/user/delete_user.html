@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>애니팅 | 회원 탈퇴</title>
+
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <style>
+    .login-wrapper {
+      background: white;
+      border-radius: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      max-width: 100%;
+    }
+    .welcome-box {
+      background: linear-gradient(135deg, #ffe2e2, #ffc1c1);
+      border-radius: 25px;
+      padding: 1.5rem;
+      min-width: 260px;
+      max-width: 320px;
+      flex: 1 1 0;
+    }
+    .login-box input {
+      background: #fff0f0;
+    }
+    .login-box button {
+      background: #ff6b6b;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .login-box button:disabled {
+      background: #ffc8c8;
+      color: #999;
+      cursor: not-allowed;
+    }
+    @media (max-width: 768px) {
+      .login-wrapper {
+        flex-direction: column !important;
+        padding: 1.5rem;
+      }
+      .welcome-box {
+        margin-bottom: 1rem;
+        border-radius: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero_area">
+    <!-- Header -->
+    <header class="header_section">
+      <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg custom_nav-container">
+          <a class="navbar-brand" href="/chat">
+            <img src="images/logo.png" alt="logo">
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main section -->
+    <section class="slider_section">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="col-md-6 offset-md-1">
+            <div class="login-wrapper d-flex flex-md-row flex-column align-items-start justify-content-between flex-wrap gap-3">
+
+              <!-- 안내 문구 -->
+              <div class="welcome-box p-5 me-md-4 mb-4 mb-md-0">
+                <h4 class="fw-bold mb-4 text-danger">정말 탈퇴하시겠어요?</h4>
+                <h5 class="fw-semibold mb-3">탈퇴 후에는 복구할 수 없어요</h5>
+                <p class="text-dark mb-0" style="line-height: 1.8;">
+                  서비스 이용 기록, 추천 내역, 마이페이지 데이터는<br>
+                  모두 삭제되며 복구되지 않습니다.<br><br>
+                  정말 탈퇴를 원하신다면<br>
+                  아래 입력란에 <strong>"탈퇴합니다"</strong>를 입력해주세요.
+                </p>
+              </div>
+
+				<!-- 탈퇴 폼 -->
+				<div class="login-box" style="max-width: 340px; width: 100%;">
+				  <h6 class="text-end fw-bold mb-3 text-danger">DELETE ACCOUNT</h6>
+				  <form>
+				    <!-- ✅ 안내 문구 추가 -->
+				    <p class="text-danger small mb-1">※ 탈퇴를 원하시면 <strong>'탈퇴합니다'</strong>를 입력해주세요.</p>
+				    
+				    <div class="mb-3">
+				      <label class="form-label small">확인 문구 입력</label>
+				      <input type="text" class="form-control rounded-pill px-3 py-1 shadow-sm" placeholder="탈퇴합니다" id="confirmText">
+				    </div>
+				
+				    <button type="submit" id="deleteBtn" class="btn w-100 py-2 rounded-pill text-white fw-semibold" style="font-size: 0.9rem;" disabled>
+				      회원 탈퇴
+				    </button>
+				  </form>
+				</div>
+
+            </div>
+          </div>
+
+          <!-- 오른쪽 일러스트 -->
+          <div class="col-md-4">
+            <div class="img-box text-center">
+              <img src="images/slider-img.png" alt="반려동물 일러스트" class="img-fluid">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- 탈퇴 버튼 활성화 스크립트 -->
+  <script>
+    const input = document.getElementById('confirmText');
+    const btn = document.getElementById('deleteBtn');
+
+    input.addEventListener('input', () => {
+      if (input.value.trim() === '탈퇴합니다') {
+        btn.disabled = false;
+      } else {
+        btn.disabled = true;
+      }
+    });
+  </script>
+</body>
+</html>

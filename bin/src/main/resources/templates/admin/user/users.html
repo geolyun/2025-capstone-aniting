@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout/adminLayout.html}">
+
+<div layout:fragment="content">
+    <main class="content">
+        <div class="container-fluid">
+            <h1 class="h3 mb-3">유저 관리</h1>
+
+            <!-- 필터 영역 -->
+            <div class="row mb-3">
+                <div class="col-md-2">
+                    <select id="statusFilter" class="form-select">
+                        <option value="">상태(전체)</option>
+                        <option value="active">활성</option>
+                        <option value="inactive">비활성</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" id="searchKeyword" class="form-control" placeholder="아이디, 이름 검색">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">검색</button>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-secondary w-100">초기화</button>
+                </div>
+            </div>
+
+            <!-- 날짜 필터 -->
+            <div class="row mb-4">
+                <div class="col-auto">
+                    <label class="form-label">가입일:</label>
+                </div>
+                <div class="col">
+                    <input type="date" class="form-control" />
+                </div>
+                <div class="col">
+                    <input type="date" class="form-control" />
+                </div>
+                <div class="col-auto">
+                    <label class="form-label">비활성화일:</label>
+                </div>
+                <div class="col">
+                    <input type="date" class="form-control" />
+                </div>
+                <div class="col">
+                    <input type="date" class="form-control" />
+                </div>
+            </div>
+
+            <!-- 유저 테이블 -->
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>아이디</th>
+                                <th>이름</th>
+                                <th>가입일</th>
+                                <th>비활성화일</th>
+                                <th>상태</th>
+                                <th>수정</th>
+                                <th>활성/비활성</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>testuser01</td>
+                                <td>홍길동</td>
+                                <td>2024-12-01</td>
+                                <td>-</td>
+                                <td><span class="badge bg-success">활성</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-warning">수정</button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-danger">비활성화</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>inactiveUser02</td>
+                                <td>김영희</td>
+                                <td>2023-07-15</td>
+                                <td>2024-01-03</td>
+                                <td><span class="badge bg-danger">비활성</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-warning">수정</button>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-success">활성화</button>
+                                </td>
+                            </tr>
+                            <!-- 더미 데이터 추가 가능 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+</html>
