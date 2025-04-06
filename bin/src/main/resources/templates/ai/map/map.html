@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>애니팅 | 반려동물 추천 AI</title>
+
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
+  <link href="https://demos.creative-tim.com/soft-ui-dashboard/assets/css/nucleo-icons.css" rel="stylesheet" />
+  <link href="https://demos.creative-tim.com/soft-ui-dashboard/assets/css/nucleo-svg.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link id="pagestyle" href="../assets/css/soft-ui-dashboard.css?v=1.1.0" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <style>
+    #map {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+    }
+    .card-body {
+      height: 650px;
+      position: relative;
+    }
+    #searchHereBtn, #locateMeBtn {
+      position: absolute;
+      z-index: 10;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      color: white;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      display: none;
+      cursor: pointer;
+    }
+    #searchHereBtn {
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #4A90E2;
+    }
+    #locateMeBtn {
+      bottom: 20px;
+      right: 20px;
+      background-color: #00B894;
+    }
+  </style>
+</head>
+
+<body class="g-sidenav-show bg-gray-100 virtual-reality">
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+	  <div class="container-fluid py-2 px-3 d-flex justify-content-between align-items-center">
+	
+	    <!-- 로고 + 텍스트 (chat 페이지로 이동) -->
+	    <a href="/chat" class="d-flex align-items-center text-decoration-none">
+	      <!-- 원형 로고 이미지 -->
+	      <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; margin-right: 12px;">
+	        <img src="images/logo.png" alt="로고" style="width: 100%; height: 100%; object-fit: cover;">
+	      </div>
+	      <!-- 텍스트 2줄 -->
+	      <div class="d-flex flex-column justify-content-center">
+	        <span class="text-muted small mb-0">Aniting</span>
+	        <span class="fw-bold fs-6">반려동물 추천 지도</span>
+	      </div>
+	    </a>
+	
+	    <!-- 마이페이지 / 로그아웃 버튼 -->
+	    <div class="collapse navbar-collapse justify-content-end" id="navbar">
+	      <ul class="navbar-nav d-flex flex-row">
+	        <li class="nav-item d-flex align-items-center me-3">
+	          <a href="/mypage" class="nav-link text-body font-weight-bold px-2">
+	            <i class="fa fa-user me-1"></i> 마이페이지
+	          </a>
+	        </li>
+	        <li class="nav-item d-flex align-items-center">
+	          <a href="/logout" class="nav-link text-body font-weight-bold px-2">
+	            <i class="fa fa-sign-out-alt me-1"></i> 로그아웃
+	          </a>
+	        </li>
+	      </ul>
+	    </div>
+	  </div>
+	</nav>
+
+  <!-- 지도 카드 -->
+  <div class="border-radius-xl mt-3 mx-3 position-relative" style="background-image: url('../assets/img/vr-bg.jpg'); background-size: cover;">
+    <main class="main-content mt-1 border-radius-lg">
+      <section class="py-5">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-10">
+              <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">📍 내 위치 기반 러시안 블루 고양이 펫샵 찾기</h5>
+                </div>
+                <div class="card-body bg-white">
+                  <button id="searchHereBtn">📍 현 지도에서 검색</button>
+                  <button id="locateMeBtn">내 위치로 이동</button>
+                  <div id="map">지도를 불러오는 중입니다...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let map, userLoc;
+    let markers = [];
+    let shownPlaces = new Set();
+    let activeInfoWindow = null;
+    const keywords = [
+      "러시안 블루 고양이 분양",
+      "러시안 블루 고양이 샵",
+      "고양이 분양",
+      "고양이 입양",
+      "고양이 펫샵"
+    ];
+
+    $.get("/api/kakao-key", function(res) {
+      const apiKey = res.kakaoApiKey;
+      const script = document.createElement("script");
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
+      script.onload = () => {
+        kakao.maps.load(() => {
+          initMap();
+        });
+      };
+      document.head.appendChild(script);
+    });
+
+    function initMap() {
+      if (!navigator.geolocation) {
+        alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(function (position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        userLoc = new kakao.maps.LatLng(lat, lng);
+
+        map = new kakao.maps.Map(document.getElementById("map"), {
+          center: userLoc,
+          level: 4
+        });
+
+        new kakao.maps.Circle({
+          center: userLoc,
+          radius: 100,
+          strokeWeight: 2,
+          strokeColor: '#4A90E2',
+          strokeOpacity: 0.8,
+          fillColor: '#4A90E2',
+          fillOpacity: 0.4,
+          map: map
+        });
+
+        // ✅ 지도 타입 컨트롤 (일반지도/스카이뷰)
+        const mapTypeControl = new kakao.maps.MapTypeControl();
+        map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+        // ✅ 줌 컨트롤 (확대/축소)
+        const zoomControl = new kakao.maps.ZoomControl();
+        map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+        // ✅ 지도 이동 시 버튼 보이기
+        kakao.maps.event.addListener(map, 'idle', () => {
+          $('#searchHereBtn').fadeIn();
+          $('#locateMeBtn').fadeIn();
+        });
+
+        $('#searchHereBtn').on('click', () => {
+          searchInBounds(map.getBounds());
+        });
+
+        $('#locateMeBtn').on('click', () => {
+       	  map.panTo(userLoc);
+
+       	  // 이동 후 버튼 숨김
+       	  $('#locateMeBtn').fadeOut();
+       	  $('#searchHereBtn').fadeOut();
+       	});
+
+        searchInBounds(map.getBounds()); // 초기 검색
+      });
+    }
+
+    function searchInBounds(bounds) {
+      const ps = new kakao.maps.services.Places();
+      shownPlaces.clear();
+      markers.forEach(m => m.setMap(null));
+      markers = [];
+
+      keywords.forEach(keyword => {
+        ps.keywordSearch(keyword, (data, status) => {
+          if (status !== kakao.maps.services.Status.OK) return;
+
+          data.forEach(place => {
+            if (!place.category_name.includes("분양")) return;
+
+            const pos = new kakao.maps.LatLng(place.y, place.x);
+            if (!bounds.contain(pos)) return;
+
+            const key = place.id;
+            if (shownPlaces.has(key)) return;
+            shownPlaces.add(key);
+
+            const marker = new kakao.maps.Marker({ map, position: pos });
+            markers.push(marker);
+
+            const info = new kakao.maps.InfoWindow({
+              content: `
+                <div style="width: 250px; word-break: break-word; padding: 10px; font-size: 13px;">
+                  <strong style="font-size: 14px;">${place.place_name}</strong><br/>
+                  <span style="color: gray;">${place.category_name}</span><br/>
+                  ${place.road_address_name || place.address_name}<br/>
+                  <span style="color: gray;">Tel: ${place.phone || '정보 없음'}</span><br/>
+                  <a href="${place.place_url}" target="_blank" style="display:block; margin-top: 6px; color: #3366cc;">카카오맵에서 보기</a>
+                </div>`
+            });
+
+            kakao.maps.event.addListener(marker, 'click', function () {
+              if (activeInfoWindow) activeInfoWindow.close();
+              info.open(map, marker);
+              activeInfoWindow = info;
+            });
+          });
+        }, { bounds });
+      });
+    }
+  </script>
+</body>
+</html>

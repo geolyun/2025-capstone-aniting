@@ -18,7 +18,7 @@ public class RecommendationController {
 
     @PostMapping
     public RecommendationResult recommendPets(@RequestBody RecommendationRequest request) throws Exception {
-        return
+        return null;
     }
 
 }
