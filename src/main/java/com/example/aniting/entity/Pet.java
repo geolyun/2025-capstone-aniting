@@ -30,8 +30,8 @@ public class Pet {
     @Column(name = "CARE_LEVEL", length = 50)
     private String careLevel; // 관리 난이도
 
-    @Column(name = "IS_SPECAIL", length = 1)
-    private String isSpecail; // 특수동물 여부 (Y/N)
+    @Column(name = "IS_SPECIAL", length = 1)
+    private String isSpecial; // 특수동물 여부 (Y/N)
 
     @Column(name = "CATEGORY", nullable = false)
     private Long category; // 질문에 대한 항목 (CATEGORY 참조)

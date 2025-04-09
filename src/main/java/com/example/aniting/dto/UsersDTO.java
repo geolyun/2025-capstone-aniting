@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
-    private Long userNo;
-    private String userId;
-    private String userNm;
+public class UsersDTO {
+    private Long usersNo;
+    private String usersId;
+    private String usersNm;
     private String passwd;
     private String securityQuestion;
     private String securityAnswer;
