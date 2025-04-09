@@ -12,18 +12,18 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USERS_NO")
-    private Long userNo; // 회원 고유 번호
+    private Long usersNo; // 회원 고유 번호
 
     @Column(name = "USERS_ID", nullable = false, length = 20)
-    private String userId; // 로그인 아이디
+    private String usersId; // 로그인 아이디
 
     @Column(name = "USERS_NM", nullable = false, length = 50)
-    private String userNm; // 이름
+    private String usersNm; // 이름
 
     @Column(name = "PASSWD", nullable = false, length = 1000)
     private String passwd; // 비밀번호 (암호화 저장)
