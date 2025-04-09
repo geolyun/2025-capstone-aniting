@@ -1,24 +1,40 @@
 package com.example.aniting.controller;
 
-import com.example.aniting.model.RecommendationRequest;
-import com.example.aniting.model.RecommendationResult;
 import com.example.aniting.service.RecommendationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.aniting.dto.*;
+
 @RestController
-@RequestMapping("/api/recommend")
+@RequestMapping("/api")
 public class RecommendationController {
 
-    @Autowired
-    private RecommendationService recommendationService;
+    private final RecommendationService recommendationService;
 
-    @PostMapping
-    public RecommendationResult recommendPets(@RequestBody RecommendationRequest request) throws Exception {
-        return
+    public RecommendationController (RecommendationService recommendationService) {
+        this.recommendationService = recommendationService;
     }
 
+    @PostMapping("/recommend")
+    public ResponseEntity<RecommendationResultDTO> recommend(@RequestBody AnswerRequestDTO responses) {
+        return ResponseEntity.ok(recommendationService.getRecommendations(responses));
+    }
 }
+
+/*
+    @PostMapping("/analyze")
+    public ScoreResult analyzeResponses(@RequestBody AnswerRequest request) throws Exception {
+        return recommendationService.analyzeUserResponses(request.getAnswers());
+    }
+
+    @PostMapping("/pets")
+    public RecommendationResult recommendPets(@RequestBody AnswerRequest request) throws Exception {
+        return recommendationService.getRecommendations(request.getAnswers());
+    }
+}
+*/
