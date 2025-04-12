@@ -52,7 +52,7 @@
     <header class="header_section">
       <div class="container-fluid">
         <nav class="navbar navbar-expand-lg custom_nav-container">
-          <a class="navbar-brand" href="login">
+          <a class="navbar-brand" href="/">
             <img src="drool_assets/images/logo.png" alt="logo">
           </a>
         </nav>
@@ -91,12 +91,12 @@
                         <input type="password" class="form-control rounded-pill px-4 py-2 border-0 shadow-sm" placeholder="비밀번호 입력" required>
                       </div>
                       <div class="text-end mb-3">
-                        <a href="find_password" class="text-danger small text-decoration-none">비밀번호를 잊으셨나요?</a>
+                        <a href="/find_password" class="text-danger small text-decoration-none">비밀번호를 잊으셨나요?</a>
                       </div>
                       <button type="submit" class="btn w-100 py-2 rounded-pill text-white fw-semibold">로그인</button>
                       <p class="text-center mt-4 text-muted small">
                         아직 계정이 없으신가요?
-                        <a href="register" class="fw-semibold text-decoration-none" style="color: #ff8c00;">회원가입</a>
+                        <a href="/register" class="fw-semibold text-decoration-none" style="color: #ff8c00;">회원가입</a>
                       </p>
                     </form>
                   </div>
@@ -118,5 +118,34 @@
 
   <script src="drool_assets/js/jquery-3.4.1.min.js"></script>
   <script src="drool_assets/js/bootstrap.js"></script>
+  <script>
+	  $(function () {
+	    $("form").submit(function (e) {
+	      e.preventDefault();
+	
+	      const usersId = $("input[placeholder='아이디 입력']").val();
+	      const passwd = $("input[placeholder='비밀번호 입력']").val();
+	
+	      if (!usersId || !passwd) {
+	        alert("아이디와 비밀번호를 입력해주세요.");
+	        return;
+	      }
+	
+	      $.ajax({
+	        url: "/api/users/login",
+	        method: "POST",
+	        contentType: "application/json",
+	        data: JSON.stringify({ usersId, passwd }),
+	        success: function (res) {
+	          alert(res.usersNm + "님 환영합니다!");
+	          location.href = "/main";
+	        },
+	        error: function () {
+	          alert("로그인 실패! 아이디 또는 비밀번호를 확인해주세요.");
+	        }
+	      });
+	    });
+	  });
+	</script>
 </body>
 </html>
