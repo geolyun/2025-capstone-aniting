@@ -6,5 +6,9 @@ import lombok.Data;
 public class RecommendationDTO {
     private int rank;
     private String animal;
+    private String species;
+    private String breed;
+    private String careLevel;
+    private String isSpecial;
     private String reason;
 }
