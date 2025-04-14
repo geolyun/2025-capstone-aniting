@@ -1,12 +1,8 @@
 package com.example.aniting.controller;
 
 import com.example.aniting.service.RecommendationService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.aniting.dto.*;
 
@@ -21,8 +17,8 @@ public class RecommendationController {
     }
 
     @PostMapping("/recommend")
-    public ResponseEntity<RecommendationResultDTO> recommend(@RequestBody AnswerRequestDTO responses) {
-        return ResponseEntity.ok(recommendationService.getRecommendations(responses));
+    public ResponseEntity<RecommendationResultDTO> recommend(@RequestHeader("user-id") String userId, @RequestBody AnswerRequestDTO requestDTO) {
+        return ResponseEntity.ok(recommendationService.getRecommendations(userId, requestDTO));
     }
 }
 

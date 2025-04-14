@@ -18,7 +18,7 @@ public class Pet {
     @Column(name = "PET_NM", nullable = false, length = 100)
     private String petNm; // 동물 이름
 
-    @Column(name = "SPECIES", nullable = false, length = 50)
+    @Column(name = "SPECIES", nullable = true, length = 50)
     private String species; // 동물 종 (강아지, 고양이 등)
 
     @Column(name = "BREED", length = 100)
