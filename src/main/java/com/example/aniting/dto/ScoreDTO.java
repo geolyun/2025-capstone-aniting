@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ScoreDTO {
     private Long scoreId;
-    private String userId;
+    private String usersId;
     private Long categoryId;
     private Integer scoreValue;
 }

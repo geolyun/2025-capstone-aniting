@@ -11,44 +11,40 @@
   <link href="https://demos.creative-tim.com/soft-ui-dashboard/assets/css/nucleo-svg.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link id="pagestyle" href="../soft_assets/css/soft-ui-dashboard.css?v=1.1.0" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/js/logout.js"></script> <!-- 로그아웃 공통 스크립트 추가 -->
 </head>
 
 <body class="g-sidenav-show bg-gray-100 virtual-reality">
   <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
-	  <div class="container-fluid py-2 px-3 d-flex justify-content-between align-items-center">
-	
-	    <!-- 로고 + 텍스트 (chat 페이지로 이동) -->
-	    <a href="/chat" class="d-flex align-items-center text-decoration-none">
-	      <!-- 원형 로고 이미지 -->
-	      <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; margin-right: 12px;">
-	        <img src="images/logo.png" alt="로고" style="width: 100%; height: 100%; object-fit: cover;">
-	      </div>
-	      <!-- 텍스트 2줄 -->
-	      <div class="d-flex flex-column justify-content-center">
-	        <span class="text-muted small mb-0">Aniting</span>
-	        <span class="fw-bold fs-6">반려동물 추천 지도</span>
-	      </div>
-	    </a>
-	
-	    <!-- 마이페이지 / 로그아웃 버튼 -->
-	    <div class="collapse navbar-collapse justify-content-end" id="navbar">
-	      <ul class="navbar-nav d-flex flex-row">
-	        <li class="nav-item d-flex align-items-center me-3">
-	          <a href="/chat" class="nav-link text-body font-weight-bold px-2">
-	            <i class="fa fa-user me-1"></i> 채팅
-	          </a>
-	        </li>
-	        <li class="nav-item d-flex align-items-center">
-	          <a href="/logout" class="nav-link text-body font-weight-bold px-2">
-	            <i class="fa fa-sign-out-alt me-1"></i> 로그아웃
-	          </a>
-	        </li>
-	      </ul>
-	    </div>
-	  </div>
-	</nav>
+    <div class="container-fluid py-2 px-3 d-flex justify-content-between align-items-center">
+      <a href="/chat" class="d-flex align-items-center text-decoration-none">
+        <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; margin-right: 12px;">
+          <img src="soft_assets/img/logo.png" alt="로고" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="d-flex flex-column justify-content-center">
+          <span class="text-muted small mb-0">Aniting</span>
+          <span class="fw-bold fs-6">반려동물 추천 AI</span>
+        </div>
+      </a>
 
-  <!-- Main Content -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbar">
+        <ul class="navbar-nav d-flex flex-row">
+          <li class="nav-item d-flex align-items-center me-3">
+            <a href="/chat" class="nav-link text-body font-weight-bold px-2">
+              <i class="fa fa-user me-1"></i> 채팅
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a href="javascript:void(0);" id="logoutBtn" class="nav-link text-body font-weight-bold px-2">
+              <i class="fa fa-sign-out-alt me-1"></i> 로그아웃
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <div class="border-radius-xl mt-3 mx-3 position-relative" style="background-image: url('../soft_assets/img/vr-bg.jpg'); background-size: cover;">
     <main class="main-content mt-1 border-radius-lg">
       <div class="section min-vh-85 position-relative transform-scale-0 transform-scale-md-7">
@@ -57,7 +53,6 @@
             <div class="row justify-content-center">
               <div class="col-lg-10">
 
-                <!-- 마이페이지 카드 -->
                 <div class="card shadow-lg border-0">
                   <div class="card-header bg-gradient-warning text-white text-center py-4">
                     <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>마이페이지</h4>
@@ -65,50 +60,25 @@
                   </div>
 
                   <div class="card-body px-5 py-4">
-                    <!-- 회원정보 영역 -->
                     <div class="mb-5">
                       <h5 class="text-dark mb-3"><i class="fas fa-id-card me-2 text-primary"></i>회원 정보</h5>
-                      <p><strong>아이디:</strong> aniting_user123</p>
-                      <p><strong>이름:</strong> 홍길동</p>
+                      <p><strong>아이디:</strong> <span id="userId"></span></p>
+                      <p><strong>이름:</strong> <span id="userName"></span></p>
 
                       <div class="d-flex gap-3 mt-3">
-                        <a href="/mypage/edit" class="btn btn-sm bg-gradient-info text-white px-4">회원정보 수정</a>
+                        <a href="/mypage/update" class="btn btn-sm bg-gradient-info text-white px-4">회원정보 수정</a>
                         <a href="/mypage/delete" class="btn btn-sm bg-gradient-danger text-white px-4">회원 탈퇴</a>
                       </div>
                     </div>
 
                     <hr class="my-4">
 
-                    <!-- 추천 히스토리 영역 -->
                     <div>
                       <h5 class="text-dark mb-3"><i class="fas fa-history me-2 text-success"></i>추천 히스토리</h5>
-
-                      <!-- 추천 히스토리 카드 반복 -->
-                      <div class="card border shadow-sm mb-4">
-                        <div class="card-body">
-                          <h6 class="text-warning fw-bold mb-2">2025년 3월 25일 추천 결과</h6>
-                          <ol class="list-group list-group-numbered small">
-                            <li class="list-group-item border-0 px-0">
-                              <strong> 코뉴어 앵무새</strong><br>
-                              <span class="text-muted">사교적인 성격과 높은 소통 능력으로 활동적인 성향의 당신에게 적합합니다.</span>
-                            </li>
-                            <li class="list-group-item border-0 px-0">
-                              <strong> 미니어처 슈나우저</strong><br>
-                              <span class="text-muted">지능이 높고 에너지가 많아 주기적인 산책을 선호하는 분께 추천합니다.</span>
-                            </li>
-                            <li class="list-group-item border-0 px-0">
-                              <strong> 햄스터</strong><br>
-                              <span class="text-muted">혼자 있는 시간을 잘 보내며, 관리가 비교적 쉬워 초보자에게 적합합니다.</span>
-                            </li>
-                          </ol>
-                        </div>
-                      </div>
-
-                      <!-- 다른 추천 결과도 반복 출력 가능 -->
-                      <!-- <div class="card mb-3">...</div> -->
-
+                      <div id="history-container"></div>
                     </div>
                   </div>
+
                 </div>
 
               </div>
@@ -119,7 +89,61 @@
     </main>
   </div>
 
+
   <script src="../soft_assets/js/core/popper.min.js"></script>
   <script src="../soft_assets/js/core/bootstrap.min.js"></script>
+  <script>
+	  $(document).ready(function () {
+	
+	    $.get("/api/mypage/info", function (data) {
+	      $("#userId").text(data.usersId);
+	      $("#userName").text(data.usersNm);
+	    });
+	
+	    $.get("/api/mypage/history", function (data) {
+	      const container = $("#history-container");
+	      if (data.length === 0) {
+	        container.append("<p class='text-muted'>추천 기록이 없습니다.</p>");
+	      } else {
+	        data.forEach(history => {
+	          const card = `
+	            <div class="card mb-4 shadow-sm">
+	              <div class="card-body">
+	                <div class="d-flex justify-content-between mb-3">
+	                  <h6 class="text-primary mb-0"><strong>추천 일시:</strong> ${formatDate(history.createdAt)}</h6>
+	                </div>
+	
+	                <div class="mb-3">
+	                  <span class="badge bg-primary me-2">1순위</span>
+	                  <span>${history.top1Breed}</span>
+	                </div>
+	                <div class="mb-3">
+	                  <span class="badge bg-secondary me-2">2순위</span>
+	                  <span>${history.top2Breed}</span>
+	                </div>
+	                <div class="mb-3">
+	                  <span class="badge bg-warning me-2 text-dark">3순위</span>
+	                  <span>${history.top3Breed}</span>
+	                </div>
+	
+	                <p class="text-muted mt-3 mb-0"><strong>추천 이유:</strong> ${history.aiReason}</p>
+	              </div>
+	            </div>`;
+	          container.append(card);
+	        });
+	      }
+	    });
+	  });
+	
+	  function formatDate(isoDateStr) {
+	    const date = new Date(isoDateStr);
+	    const yyyy = date.getFullYear();
+	    const MM = String(date.getMonth() + 1).padStart(2, '0');
+	    const dd = String(date.getDate()).padStart(2, '0');
+	    const hh = String(date.getHours()).padStart(2, '0');
+	    const mm = String(date.getMinutes()).padStart(2, '0');
+	    return `${yyyy}-${MM}-${dd} ${hh}:${mm}`;
+	  }
+	</script>
 </body>
 </html>

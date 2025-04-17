@@ -15,8 +15,8 @@ public class Score {
     @Column(name = "SCORE_ID")
     private Long scoreId; // 점수 고유 ID
 
-    @Column(name = "USER_ID", nullable = false, length = 20)
-    private String userId; // 사용자 ID (USER 참조)
+    @Column(name = "USERS_ID", nullable = false, length = 20)
+    private String usersId; // 사용자 ID (USER 참조)
 
     @Column(name = "CATEGORY_ID", nullable = false)
     private Long categoryId; // 질문에 대한 항목 (CATEGORY 참조)

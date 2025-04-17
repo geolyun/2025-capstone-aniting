@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RecommendResponseDTO {
     private Long responseId;
-    private String userId;
+    private String usersId;
     private Integer questionOrder;
     private String question;
     private String answer;
