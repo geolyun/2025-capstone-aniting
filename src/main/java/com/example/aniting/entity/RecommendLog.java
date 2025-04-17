@@ -17,8 +17,8 @@ public class RecommendLog {
     @Column(name = "LOG_ID")
     private Long logId; // 로그 고유 ID
 
-    @Column(name = "USER_ID", nullable = false, length = 20)
-    private String userId; // 사용자 ID (USER 참조)
+    @Column(name = "USERS_ID", nullable = false, length = 20)
+    private String usersId; // 사용자 ID (USER 참조)
 
     @Column(name = "AI_PROMPT", nullable = false, columnDefinition = "TEXT")
     private String aiPrompt; // AI에게 보낸 프롬프트 전체

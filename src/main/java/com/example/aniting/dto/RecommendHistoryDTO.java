@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RecommendHistoryDTO {
     private Long historyId;
-    private String userId;
+    private String usersId;
     private Long top1PetId;
     private Long top2PetId;
     private Long top3PetId;

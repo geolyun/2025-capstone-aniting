@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RecommendLogDTO {
     private Long logId;
-    private String userId;
+    private String usersId;
     private String aiPrompt;
     private String aiResponse;
     private LocalDateTime createdAt;

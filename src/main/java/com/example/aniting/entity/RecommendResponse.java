@@ -17,8 +17,8 @@ public class RecommendResponse {
     @Column(name = "RESPONSE_ID")
     private Long responseId; // AI 응답 고유 ID
 
-    @Column(name = "USER_ID", nullable = false, length = 20)
-    private String userId; // 사용자 ID (USER 참조)
+    @Column(name = "USERS_ID", nullable = false, length = 20)
+    private String usersId; // 사용자 ID (USER 참조)
 
     @Column(name = "QUESTION_ORDER", nullable = false)
     private Integer questionOrder; // 질문 순서
