@@ -1,5 +1,7 @@
 package com.example.aniting.mypage;
 
+import java.awt.Point;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,38 @@ public class MypageServiceImpl implements MypageService {
 	            return map;
 	        })
 	        .collect(Collectors.toList());
+	}
+
+	@Override
+	public UsersDTO updateUser(String usersId, String usersNm, String passwd) {
+		return usersRepository.findByUsersId(usersId)
+		        .map(user -> {
+
+		        	if (usersNm != null && !usersNm.isBlank()) {
+		                user.setUsersNm(usersNm);
+		            }
+
+		            if (passwd != null && !passwd.isBlank()) {
+		                user.setPasswd(passwordEncoder.encode(passwd));
+		            }
+		            
+		            user.setUpdatedAt(LocalDateTime.now());
+		            usersRepository.save(user);
+
+		            return new UsersDTO(
+		                user.getUsersNo(),
+		                user.getUsersId(),
+		                user.getUsersNm(),
+		                null,
+		                user.getSecurityQuestion(),
+		                null,
+		                user.getJoinAt(),
+		                user.getUpdatedAt(),
+		                user.getActiveYn(),
+		                user.getInactiveAt()
+		            );
+		        })
+		        .orElseThrow();
 	}
 	
 }

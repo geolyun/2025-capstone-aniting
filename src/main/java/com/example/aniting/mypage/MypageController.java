@@ -6,11 +6,14 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.aniting.config.SecurityConfig;
 import com.example.aniting.dto.RecommendHistoryDTO;
 import com.example.aniting.dto.UsersDTO;
+import com.example.aniting.entity.Users;
+import com.example.aniting.repository.UsersRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -40,6 +43,21 @@ public class MypageController {
 		HttpSession session = request.getSession();
 	    UsersDTO user = (UsersDTO) session.getAttribute("user");
 	    return mypageService.getRecommendHistory(user.getUsersId());
+	}
+	
+	@PostMapping("/update")
+	public void updateUser(@RequestBody Map<String, String> updateUser, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		
+		UsersDTO user = (UsersDTO) session.getAttribute("user");
+		String usersId = user.getUsersId();
+		String usersNm = updateUser.get("usersNm");
+		String passwd = updateUser.get("passwd");
+		
+		UsersDTO updatedDto = mypageService.updateUser(usersId, usersNm, passwd);
+		session.setAttribute("user", updatedDto);
+		
 	}
 	
 }
