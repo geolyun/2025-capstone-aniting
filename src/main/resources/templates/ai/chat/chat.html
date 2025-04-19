@@ -5,25 +5,36 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>애니팅 | 반려동물 추천 AI</title>
 
+	<!-- 폰트 & 아이콘 -->
 	<link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+	<link href="/soft_assets/css/soft-ui-dashboard.css" rel="stylesheet" />
 </head>
 
 <body class="g-sidenav-show bg-gray-100 virtual-reality">
+<!-- 네비게이션 -->
+<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur">
 	<div class="container-fluid py-2 px-3 d-flex justify-content-between align-items-center">
 		<a href="/main" class="d-flex align-items-center text-decoration-none">
 			<div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; margin-right: 12px;">
+				<img src="/soft_assets/img/logo.png" alt="로고" style="width: 100%; height: 100%; object-fit: cover;">
 			</div>
 			<div class="d-flex flex-column justify-content-center">
 				<span class="text-muted small mb-0">Aniting</span>
 				<span class="fw-bold fs-6">반려동물 추천 지도</span>
 			</div>
 		</a>
+		<div class="collapse navbar-collapse justify-content-end">
 			<ul class="navbar-nav d-flex flex-row">
+				<li class="nav-item me-3"><a href="/mypage" class="nav-link text-body font-weight-bold"><i class="fa fa-user me-1"></i> 마이페이지</a></li>
+				<li class="nav-item"><a href="/logout" class="nav-link text-body font-weight-bold"><i class="fa fa-sign-out-alt me-1"></i> 로그아웃</a></li>
 			</ul>
 		</div>
 	</div>
 </nav>
 
+<!-- 메인 -->
+<div class="border-radius-xl mt-3 mx-3 position-relative" style="background-image: url('/soft_assets/img/vr-bg.jpg'); background-size: cover;">
 	<main class="main-content mt-1 border-radius-lg">
 		<section class="py-5">
 			<div class="container">
@@ -34,8 +45,14 @@
 								<h5 class="mb-0">🐾 반려동물 추천 AI 애니팅과의 대화</h5>
 								<span class="badge bg-white text-primary">Beta</span>
 							</div>
+
+							<!-- 채팅 박스 -->
+							<div class="card-body bg-white" id="chat-box" style="height: 600px; overflow-y: auto;"></div>
+
+							<!-- 입력창 -->
 							<div class="card-footer bg-white d-flex">
 								<input type="text" class="form-control me-2 border-radius-xl" placeholder="메시지를 입력하세요...">
+								<button class="btn bg-gradient-primary text-white px-4" id="send-button">
 									<i class="fas fa-arrow-up"></i>
 								</button>
 							</div>
@@ -46,6 +63,93 @@
 		</section>
 	</main>
 </div>
+
+<script>
+	let questions = [];
+	let currentIndex = 0;
+	const answers = {};
+
+	async function loadQuestions() {
+		try {
+			const res = await fetch("/api/questions");
+			questions = await res.json();
+			currentIndex = 0;
+			addGPTMessage(questions[currentIndex]);
+		} catch (err) {
+			addGPTMessage("❗ 질문을 불러오는 데 실패했습니다.");
+		}
+	}
+
+	function addGPTMessage(text) {
+		const box = document.getElementById("chat-box");
+		const html = `
+      <div class="d-flex align-items-start mb-4">
+        <div class="me-3">
+          <div class="avatar avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">GPT</div>
+        </div>
+        <div class="p-3 rounded-3 bg-white shadow-sm w-100">${text}</div>
+      </div>
+    `;
+		box.insertAdjacentHTML('beforeend', html);
+		box.scrollTop = box.scrollHeight;
+	}
+
+	function addUserMessage(text) {
+		const box = document.getElementById("chat-box");
+		const html = `
+      <div class="d-flex justify-content-end mb-4 align-items-start">
+        <div class="p-3 rounded-3 bg-gradient-info text-white shadow-sm w-75">${text}</div>
+        <div class="avatar avatar-sm bg-gradient-info text-white rounded-circle d-flex align-items-center justify-content-center ms-3">나</div>
+      </div>
+    `;
+		box.insertAdjacentHTML('beforeend', html);
+		box.scrollTop = box.scrollHeight;
+	}
+
+	function sendUserAnswer() {
+		const input = document.querySelector(".card-footer input");
+		const text = input.value.trim();
+		if (!text) return;
+
+		addUserMessage(text);
+		answers[questions[currentIndex]] = text;
+		input.value = "";
+
+		currentIndex++;
+		if (currentIndex < questions.length) {
+			setTimeout(() => addGPTMessage(questions[currentIndex]), 300);
+		} else {
+			addGPTMessage("🎯 추천 결과를 분석 중입니다...");
+			submitAnswers();
+		}
+	}
+
+	document.getElementById("send-button").addEventListener("click", sendUserAnswer);
+
+	document.querySelector(".card-footer input").addEventListener("keypress", function (e) {
+		if (e.key === "Enter") {
+			sendUserAnswer();
+		}
+	});
+
+	function submitAnswers() {
+		fetch("/api/recommend", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ answers })
+		})
+				.then(res => res.json())
+				.then(data => {
+					localStorage.setItem("recommendationResult", JSON.stringify(data));
+					window.location.href = "/recommend/result";
+				})
+				.catch(() => {
+					addGPTMessage("❌ 추천 결과를 가져오는 데 실패했습니다.");
+				});
+	}
+
+	window.onload = loadQuestions;
+</script>
 
 </body>
 </html>
