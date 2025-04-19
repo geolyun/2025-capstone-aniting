@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RecommendHistoryRepository extends JpaRepository<RecommendHistory, Long> {
+	
+	void deleteByUsersId(String usersId);
+	
 }

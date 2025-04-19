@@ -1,22 +1,52 @@
 package com.example.aniting.users;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.example.aniting.AnitingProjectApplication;
 import com.example.aniting.dto.UsersDTO;
 import com.example.aniting.entity.Users;
+import com.example.aniting.gpt.OpenAiClient;
+import com.example.aniting.repository.RecommendHistoryRepository;
+import com.example.aniting.repository.RecommendLogRepository;
+import com.example.aniting.repository.RecommendResponseRepository;
+import com.example.aniting.repository.ScoreRepository;
 import com.example.aniting.repository.UsersRepository;
+
 
 @Service
 public class UsersServiceImpl implements UsersService {
+
+    private final AnitingProjectApplication anitingProjectApplication;
+
+    private final OpenAiClient openAiClient;
 
 	@Autowired
 	private UsersRepository usersRepository;
 	
 	@Autowired
+	private ScoreRepository scoreRepository;
+	
+	@Autowired
+	private RecommendResponseRepository recommendResponseRepository;
+	
+	@Autowired
+	private RecommendLogRepository recommendLogRepository;
+	
+	@Autowired
+	private RecommendHistoryRepository recommendHistoryRepository;
+	
+	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+    UsersServiceImpl(OpenAiClient openAiClient, AnitingProjectApplication anitingProjectApplication) {
+        this.openAiClient = openAiClient;
+        this.anitingProjectApplication = anitingProjectApplication;
+    }
 
 	@Override
 	public boolean register(UsersDTO dto) {
@@ -92,5 +122,24 @@ public class UsersServiceImpl implements UsersService {
         
     }
 
+	@Override
+	@Transactional
+	public void deleteInactiveUsers() {
+		
+		LocalDateTime inactiveAt = LocalDateTime.now().minusMonths(3);
+		List<Users> inactiveUsers = usersRepository.findByActiveYnAndInactiveAtBefore("N", inactiveAt);
+		
+		for (Users user : inactiveUsers) {
+	        String usersId = user.getUsersId();
+
+	        recommendHistoryRepository.deleteByUsersId(usersId);
+	        recommendLogRepository.deleteByUsersId(usersId);
+	        recommendResponseRepository.deleteByUsersId(usersId);
+	        scoreRepository.deleteByUsersId(usersId);
+
+	        usersRepository.delete(user);
+	    }
+		
+	}
 
 }
