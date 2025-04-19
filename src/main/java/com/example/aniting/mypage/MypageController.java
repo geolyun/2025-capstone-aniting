@@ -60,4 +60,12 @@ public class MypageController {
 		
 	}
 	
+	@PostMapping("/delete")
+	public void deleteUser(HttpSession session) {
+	    UsersDTO user = (UsersDTO) session.getAttribute("user");
+	    mypageService.deactivateUser(user.getUsersId());
+	    session.invalidate(); // 세션 만료
+	}
+
+	
 }
