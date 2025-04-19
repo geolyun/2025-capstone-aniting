@@ -11,5 +11,6 @@ public interface MypageService {
 	public UsersDTO getUserInfo(String usersId);
 	public List<Map<String, Object>> getRecommendHistory(String usersId);
 	public UsersDTO updateUser(String usersId, String usersNm, String passwd);
+	public void deactivateUser(String usersId);
 
 }

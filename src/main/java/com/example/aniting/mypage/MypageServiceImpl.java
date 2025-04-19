@@ -97,5 +97,14 @@ public class MypageServiceImpl implements MypageService {
 		        })
 		        .orElseThrow();
 	}
+
+	@Override
+	public void deactivateUser(String usersId) {
+		usersRepository.findByUsersId(usersId).ifPresent(user -> {
+	        user.setActiveYn("N");
+	        user.setInactiveAt(LocalDateTime.now());
+	        usersRepository.save(user);
+	    });
+	}
 	
 }
