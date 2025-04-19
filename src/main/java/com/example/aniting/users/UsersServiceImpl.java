@@ -47,7 +47,9 @@ public class UsersServiceImpl implements UsersService {
     public UsersDTO login(String usersId, String passwd) {
 		
         return usersRepository.findByUsersId(usersId)
-            .filter(user -> passwordEncoder.matches(passwd, user.getPasswd()))
+            .filter(user -> 
+            	passwordEncoder.matches(passwd, user.getPasswd()) &&
+            	"Y".equals(user.getActiveYn()))
             .map(user -> new UsersDTO(
                 user.getUsersNo(),
                 user.getUsersId(),
