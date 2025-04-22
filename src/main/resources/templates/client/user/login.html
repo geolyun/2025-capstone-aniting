@@ -91,12 +91,12 @@
                         <input type="password" class="form-control rounded-pill px-4 py-2 border-0 shadow-sm" placeholder="비밀번호 입력" required>
                       </div>
                       <div class="text-end mb-3">
-                        <a href="/find_password" class="text-danger small text-decoration-none">비밀번호를 잊으셨나요?</a>
+                        <a href="/user/find_password" class="text-danger small text-decoration-none">비밀번호를 잊으셨나요?</a>
                       </div>
                       <button type="submit" class="btn w-100 py-2 rounded-pill text-white fw-semibold">로그인</button>
                       <p class="text-center mt-4 text-muted small">
                         아직 계정이 없으신가요?
-                        <a href="/register" class="fw-semibold text-decoration-none" style="color: #ff8c00;">회원가입</a>
+                        <a href="/user/register" class="fw-semibold text-decoration-none" style="color: #ff8c00;">회원가입</a>
                       </p>
                     </form>
                   </div>
@@ -138,7 +138,7 @@
 	        data: JSON.stringify({ usersId, passwd }),
 	        success: function (res) {
 	          alert(res.usersNm + "님 환영합니다!");
-	          location.href = "/main";
+	          location.href = "/recommend/chat";
 	        },
 	        error: function () {
 	          alert("로그인 실패! 아이디 또는 비밀번호를 확인해주세요.");

@@ -4,19 +4,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class MypageMainController {
+public class MypageViewController {
 
-	@GetMapping("/mypage")
+	@GetMapping("/user/mypage")
 	public String mypage() {
 		return "client/mypage/mypage";
 	}
 	
-	@GetMapping("/mypage/update")
+	@GetMapping("/user/mypage/update")
 	public String update() {
 		return "client/user/update_user";
 	}
 	
-	@GetMapping("/mypage/delete")
+	@GetMapping("/user/mypage/delete")
 	public String delete() {
 		return "client/user/delete_user";
 	}
