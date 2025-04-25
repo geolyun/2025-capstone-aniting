@@ -2,159 +2,163 @@
 <html lang="ko">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>애니팅 | 반려동물 추천 AI</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>애니팅 | 반려동물 추천 결과</title>
 
-  <!-- Fonts & Icons -->
-  <link rel="icon" type="image/png" href="/soft_assets/img/favicon.png">
-  <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
-  <link href="https://demos.creative-tim.com/soft-ui-dashboard/assets/css/nucleo-icons.css" rel="stylesheet" />
-  <link href="https://demos.creative-tim.com/soft-ui-dashboard/assets/css/nucleo-svg.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-  <!-- Soft UI Dashboard CSS -->
-  <link id="pagestyle" href="../soft_assets/css/soft-ui-dashboard.css?v=1.1.0" rel="stylesheet" />
-
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<link rel="icon" type="image/png" href="images/favicon.png">
+	<link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
+	<link href="https://demos.creative-tim.com/soft-ui-dashboard/assets/css/nucleo-icons.css" rel="stylesheet" />
+	<link href="https://demos.creative-tim.com/soft-ui-dashboard/assets/css/nucleo-svg.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	<link id="pagestyle" href="../soft_assets/css/soft-ui-dashboard.css?v=1.1.0" rel="stylesheet" />
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="g-sidenav-show bg-gray-100 virtual-reality">
-  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
-	  <div class="container-fluid py-2 px-3 d-flex justify-content-between align-items-center">
-	
-	    <!-- 로고 + 텍스트 (chat 페이지로 이동) -->
-	    <a href="/recommend/chat" class="d-flex align-items-center text-decoration-none">
-	      <!-- 원형 로고 이미지 -->
-	      <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; margin-right: 12px;">
-	        <img src="soft_assets/img/logo.png" alt="로고" style="width: 100%; height: 100%; object-fit: cover;">
-	      </div>
-	      <!-- 텍스트 2줄 -->
-	      <div class="d-flex flex-column justify-content-center">
-	        <span class="text-muted small mb-0">Aniting</span>
-	        <span class="fw-bold fs-6">반려동물 추천 AI</span>
-	      </div>
-	    </a>
-	
-	    <!-- 마이페이지 / 로그아웃 버튼 -->
-	    <div class="collapse navbar-collapse justify-content-end" id="navbar">
-	      <ul class="navbar-nav d-flex flex-row">
-	        <li class="nav-item d-flex align-items-center me-3">
-	          <a href="/user/mypage" class="nav-link text-body font-weight-bold px-2">
-	            <i class="fa fa-user me-1"></i> 마이페이지
-	          </a>
-	        </li>
-	        <li class="nav-item d-flex align-items-center">
-	          <a href="/logout" class="nav-link text-body font-weight-bold px-2">
-	            <i class="fa fa-sign-out-alt me-1"></i> 로그아웃
-	          </a>
-	        </li>
-	      </ul>
-	    </div>
-	  </div>
-	</nav>
+<!-- 네비게이션 -->
+<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur">
+	<div class="container-fluid py-2 px-3 d-flex justify-content-between align-items-center">
+		<a href="/recommend/chat" class="d-flex align-items-center text-decoration-none">
+			<div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; margin-right: 12px;">
+				<img src="/soft_assets/img/logo.png" alt="로고" style="width: 100%; height: 100%; object-fit: cover;">
+			</div>
+			<div class="d-flex flex-column justify-content-center">
+				<span class="text-muted small mb-0">Aniting</span>
+				<span class="fw-bold fs-6">반려동물 추천 결과</span>
+			</div>
+		</a>
+		<div class="collapse navbar-collapse justify-content-end" id="navbar">
+			<ul class="navbar-nav d-flex flex-row">
+				<li class="nav-item me-3">
+					<a href="/mypage" class="nav-link text-body font-weight-bold px-2">
+						<i class="fa fa-user me-1"></i> 마이페이지
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="/logout" class="nav-link text-body font-weight-bold px-2">
+						<i class="fa fa-sign-out-alt me-1"></i> 로그아웃
+					</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
 
-  <!-- Main Content -->
-  <div class="border-radius-xl mt-3 mx-3 position-relative" style="background-image: url('../soft_assets/img/vr-bg.jpg'); background-size: cover;">
-    <main class="main-content mt-1 border-radius-lg">
-      <div class="section min-vh-85 position-relative transform-scale-0 transform-scale-md-7">
-        <section class="py-5">
-          <div class="container">
-            <div class="row justify-content-center">
-              <div class="col-lg-10">
+<!-- 메인 -->
+<div class="border-radius-xl mt-3 mx-3 position-relative" style="background-image: url('../soft_assets/img/vr-bg.jpg'); background-size: cover;">
+	<main class="main-content mt-1 border-radius-lg">
+		<section class="py-5">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-lg-10">
+						<div class="card shadow-lg border-0">
+							<div class="card-header bg-gradient-warning text-white text-center py-4">
+								<h4 class="mb-0"><i class="fas fa-paw me-2"></i>당신에게 맞는 반려동물 추천 결과</h4>
+								<p class="mb-0 text-sm mt-2">GPT 기반 AI 분석 결과를 바탕으로 추천된 반려동물입니다.</p>
+							</div>
 
-				<!-- 결과 카드 -->
-				<div class="card shadow-lg border-0">
-				  <div class="card-header bg-gradient-warning text-white text-center py-4">
-				    <h4 class="mb-0"><i class="fas fa-paw me-2"></i>당신에게 맞는 반려동물 추천 결과</h4>
-				    <p class="mb-0 text-sm mt-2">GPT 기반 AI 분석 결과를 바탕으로 추천된 반려동물입니다.</p>
-				  </div>
-				
-				  <div class="card-body px-5 py-4">
-				    <!-- 추천 리스트 -->
-				    <div class="mb-4">
-				      <h5 class="text-dark mb-3"><i class="fas fa-crown text-warning me-2"></i>TOP 3 추천 반려동물</h5>
-				      <ol class="list-group list-group-numbered">
-				        <li class="list-group-item border-0">
-				          <strong>러시안 블루 고양이</strong><br>
-				          <span class="text-muted">조용하고 독립적인 성향으로, 야행성인 당신에게 잘 맞습니다. 유대감도 잘 형성됩니다.</span>
-				        </li>
-				        <li class="list-group-item border-0 mt-2">
-				          <strong>페릿</strong><br>
-				          <span class="text-muted">호기심 많고 사회적인 성격으로, 집에서도 활발히 교감할 수 있습니다.</span>
-				        </li>
-				        <li class="list-group-item border-0 mt-2">
-				          <strong>고슴도치</strong><br>
-				          <span class="text-muted">혼자 있는 시간을 잘 보내며, 조용한 환경에서 적응력이 뛰어납니다.</span>
-				        </li>
-				      </ol>
-				    </div>
-				
-				    <hr class="my-4">
-				
-				    <!-- 성향 점수 그래프 -->
-				    <div class="mb-5">
-				      <h5 class="text-dark mb-3"><i class="fas fa-chart-bar me-2 text-info"></i>사용자 성향 분석 결과</h5>
-				      <canvas id="scoreChart" height="280"></canvas>
-				    </div>
-				
-				    <!-- 🧭 주변 펫샵 둘러보기 버튼 -->
-				    <div class="text-center mt-4">
-				      <a href="/recommend/map" class="btn bg-gradient-warning text-white px-5 py-2 rounded-pill">
-				        <i class="fas fa-map-marker-alt me-2"></i>주변 펫샵 둘러보기
-				      </a>
-				    </div>
-				  </div>
+							<div class="card-body px-5 py-4" id="recommend-list">
+								<!-- JS에서 추천 결과 동적 삽입 -->
+							</div>
+
+							<hr class="my-4" />
+
+							<div class="mb-5 px-5">
+								<h5 class="text-dark mb-3">
+									<i class="fas fa-chart-bar me-2 text-info"></i>사용자 성향 분석 결과
+								</h5>
+								<canvas id="scoreChart" height="280"></canvas>
+							</div>
+
+							<div class="text-center mt-4 mb-4">
+								<a href="/map/petshops" class="btn bg-gradient-warning text-white px-5 py-2 rounded-pill">
+									<i class="fas fa-map-marker-alt me-2"></i>주변 펫샵 둘러보기
+								</a>
+							</div>
+						</div>
+					</div>
 				</div>
-				
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
+			</div>
+		</section>
+	</main>
+</div>
 
-  <!-- Chart.js 시각화 -->
-  <script>
-    const ctx = document.getElementById('scoreChart').getContext('2d');
-    const scoreChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: [
-          "야행성", "운동 빈도", "유대감 기대",
-          "교통수단", "함께 활동", "휴가 스타일",
-          "방문객 유무", "책임감", "주말 활동", "음악 분위기"
-        ],
-        datasets: [{
-          label: '점수 (1~5점)',
-          data: [3, 3, 4, 4, 3, 4, 2, 5, 2, 4],
-          backgroundColor: 'rgba(94, 114, 228, 0.8)',
-          borderRadius: 10,
-          barThickness: 24,
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: true }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 5,
-            ticks: { stepSize: 1 }
-          }
-        }
-      }
-    });
-  </script>
+<!-- 결과 렌더링 JS -->
+<script>
+	const result = JSON.parse(localStorage.getItem("recommendationResult"));
 
-  <!-- Core JS -->
-  <script src="../soft_assets/js/core/popper.min.js"></script>
-  <script src="../soft_assets/js/core/bootstrap.min.js"></script>
+	if (!result || !result.recommendations) {
+		document.getElementById("recommend-list").innerHTML = `
+      <div class="alert alert-danger">
+        추천 결과가 존재하지 않습니다. <br>
+        <a href="/recommend/chat" class="btn btn-sm bg-gradient-warning mt-2">다시 추천받기</a>
+      </div>`;
+	} else {
+		// 🐾 추천 리스트 렌더링
+		const recHtml = result.recommendations.map(r => `
+      <div class="mb-4">
+        <h5 class="text-dark fw-bold mb-1">
+          <i class="fas fa-star text-warning me-2"></i>${r.rank}위: ${r.animal}
+        </h5>
+        <p class="text-secondary mb-2">${r.reason}</p>
+      </div>`).join("");
+		document.getElementById("recommend-list").insertAdjacentHTML("afterbegin", recHtml);
+
+		// ✅ 성향 점수 차트 렌더링
+		if (result.userScores) {
+			const scoreMap = result.userScores;
+			const scoreLabels = {
+				"activity": "활동성",
+				"sociability": "사회성",
+				"care": "돌봄 의지",
+				"emotional_bond": "정서적 교감",
+				"environment": "환경 적합성",
+				"routine": "일상 루틴"
+			};
+			const labels = Object.keys(scoreMap).map(k => scoreLabels[k] || k);
+			const data = Object.values(scoreMap);
+
+			// Chart.js 안전 실행
+			window.addEventListener("load", function () {
+				const ctx = document.getElementById('scoreChart')?.getContext('2d');
+				if (ctx) {
+					new Chart(ctx, {
+						type: 'bar',
+						data: {
+							labels: labels,
+							datasets: [{
+								label: '점수 (1~5점)',
+								data: data,
+								backgroundColor: 'rgba(94, 114, 228, 0.8)',
+								borderRadius: 10,
+								barThickness: 24,
+							}]
+						},
+						options: {
+							responsive: true,
+							plugins: {
+								legend: { display: false },
+								tooltip: { enabled: true }
+							},
+							scales: {
+								y: {
+									beginAtZero: true,
+									max: 5,
+									ticks: { stepSize: 1 }
+								}
+							}
+						}
+					});
+				} else {
+					console.warn("❗ scoreChart 캔버스를 찾을 수 없습니다.");
+				}
+			});
+		}
+	}
+</script>
+
+<script src="../soft_assets/js/core/popper.min.js"></script>
+<script src="../soft_assets/js/core/bootstrap.min.js"></script>
 </body>
-
 </html>
