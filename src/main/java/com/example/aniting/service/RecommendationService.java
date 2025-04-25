@@ -130,9 +130,9 @@ public class RecommendationService {
 
         RecommendHistory history = new RecommendHistory();
         history.setUsersId(usersId);
-        history.setTop1Pet(resolvePetByName(recs.get(0).getAnimal()));
-        history.setTop2Pet(resolvePetByName(recs.get(1).getAnimal()));
-        history.setTop3Pet(resolvePetByName(recs.get(2).getAnimal()));
+        history.setTop1PetId(resolvePetByName(recs.get(0).getAnimal()));
+        history.setTop2PetId(resolvePetByName(recs.get(1).getAnimal()));
+        history.setTop3PetId(resolvePetByName(recs.get(2).getAnimal()));
         history.setAiReason(recs.get(0).getReason());
         history.setCreatedAt(LocalDateTime.now());
 

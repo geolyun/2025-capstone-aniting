@@ -8,5 +8,9 @@ import java.util.*;
 
 @Repository
 public interface PetRepository extends JpaRepository<Pet, Long> {
+	
     Optional<Pet> findByPetNm(String petNm);
+    int countBySpecies(String species);
+    int countByIsSpecial(String yn);
+    
 }

@@ -4,91 +4,159 @@
       layout:decorate="~{common/layout/adminLayout.html}">
 
 <div layout:fragment="content">
-    <main class="content">
-        <div class="container-fluid p-0">
-            <h1 class="h3 mb-4"><strong>애니팅 관리자 대시보드</strong></h1>
+  <main class="content">
+    <div class="container-fluid p-0">
+      <h1 class="h3 mb-4"><strong>애니팅 관리자 대시보드</strong></h1>
 
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">등록된 반려동물</h5>
-                            <h1 class="mb-0">42</h1>
-                            <p class="mt-2 text-muted">강아지: 25 | 고양이: 10 | 특수동물: 7</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">총 추천 기록</h5>
-                            <h1 class="mb-0">123</h1>
-                            <p class="mt-2 text-muted">오늘: 5 | 이번 주: 18 | 이번 달: 53</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">가입된 유저 수</h5>
-                            <h1 class="mb-0">350</h1>
-                            <p class="mt-2 text-muted">비활성 유저: 27</p>
-                        </div>
-                    </div>
-                </div>
+      <!-- 요약 카드 -->
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">등록된 반려동물</h5>
+              <h1 class="mb-0" id="totalPets">0</h1>
+              <p class="mt-2 text-muted" id="petBreakdown">-</p>
             </div>
-
-            <!-- 차트 영역 -->
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">유저 상태 비율</h5>
-                            <canvas id="userChart" style="width:100%; height:300px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">추천 횟수 현황</h5>
-                            <canvas id="recommendChart" style="width:100%; height:300px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-    </main>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">총 추천 기록</h5>
+              <h1 class="mb-0" id="totalRecommendations">0</h1>
+              <p class="mt-2 text-muted" id="recommendSummary">-</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">가입된 유저 수</h5>
+              <h1 class="mb-0" id="totalUsers">0</h1>
+              <p class="mt-2 text-muted" id="inactiveUsers">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- 외부 차트 라이브러리 -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        $(document).ready(function () {
-            new Chart($("#userChart"), {
-                type: "doughnut",
-                data: {
-                    labels: ["활성 유저", "비활성 유저"],
-                    datasets: [{
-                        data: [323, 27],
-                        backgroundColor: ["#4CAF50", "#F44336"]
-                    }]
-                }
-            });
+      <!-- 추가 요약 -->
+      <div class="row mt-3">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">최근 7일 가입자</h5>
+              <h2 class="mb-0" id="newUsers7days">0</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">응답 수 대비 추천률</h5>
+              <h2 class="mb-0" id="recommendRate">0%</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">이상 사용자 수</h5>
+              <h2 class="mb-0" id="anomalyUsers">0</h2>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            new Chart($("#recommendChart"), {
-                type: "bar",
-                data: {
-                    labels: ["월", "화", "수", "목", "금", "토", "일"],
-                    datasets: [{
-                        label: "추천 수",
-                        data: [5, 8, 12, 7, 10, 4, 3],
-                        backgroundColor: "#2196F3"
-                    }]
-                }
-            });
-        });
-    </script>
+      <!-- 차트들 -->
+      <div class="row mt-4">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">유저 상태 비율</h5>
+              <canvas id="userChart" class="chart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">추천 횟수 현황</h5>
+              <canvas id="recommendChart" class="chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">점수 분포</h5>
+              <canvas id="scoreChart" class="chart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">TOP 3 추천 반려동물</h5>
+              <canvas id="topPetChart" class="chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-md-10">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">카테고리별 점수 평균</h5>
+              <canvas id="categoryScoreChart" class="chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+<style>
+  .chart {
+    width: 80% !important;
+    height: 80% !important;
+  }
+</style>
+
+  
+  <!-- Chart.js + jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/admin_assets/js/jquery-3.7.1.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // 요약 데이터
+      $.get("/api/admin/dashboard/summary", function (data) {
+        $("#totalPets").text(data.totalPets);
+        $("#petBreakdown").text("강아지: " + data.petCounts["강아지"] + " | 고양이: " + data.petCounts["고양이"] + " | 특수동물: " + data.petCounts["특수동물"]);
+
+        $("#totalRecommendations").text(data.totalRecommendations);
+        $("#recommendSummary").text("오늘: " + data.today + " | 이번 주: " + data.thisWeek + " | 이번 달: " + data.thisMonth);
+
+        $("#totalUsers").text(data.totalUsers);
+        $("#inactiveUsers").text("비활성 유저: " + data.inactiveUsers);
+
+        $("#newUsers7days").text(data.newUsers7days);
+        $("#recommendRate").text(data.recommendRate + "%");
+        $("#anomalyUsers").text(data.anomalyUsers);
+      });
+
+      // 차트 데이터
+      $.get("/api/admin/dashboard/chart/userStatus", data => new Chart($("#userChart"), data));
+      $.get("/api/admin/dashboard/chart/recommendWeek", data => new Chart($("#recommendChart"), data));
+      $.get("/api/admin/dashboard/chart/score", data => new Chart($("#scoreChart"), data));
+      $.get("/api/admin/dashboard/chart/topPets", data => new Chart($("#topPetChart"), data));
+      $.get("/api/admin/dashboard/chart/categoryScore", data => new Chart($("#categoryScoreChart"), data));
+    });
+  </script>
 </div>
-
 </html>
+
+

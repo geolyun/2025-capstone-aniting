@@ -22,15 +22,15 @@ public class RecommendHistory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TOP1_PET_ID", nullable = false)
-    private Pet top1Pet; // AI가 추천한 1순위 반려동물 ID
+    private Pet top1PetId; // AI가 추천한 1순위 반려동물 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TOP2_PET_ID")
-    private Pet top2Pet; // AI가 추천한 2순위 반려동물 ID
+    private Pet top2PetId; // AI가 추천한 2순위 반려동물 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TOP3_PET_ID")
-    private Pet top3Pet; // AI가 추천한 3순위 반려동물 ID
+    private Pet top3PetId; // AI가 추천한 3순위 반려동물 ID
 
     @Column(name = "AI_REASON", columnDefinition = "TEXT")
     private String aiReason; // AI의 추천 사유

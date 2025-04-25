@@ -58,9 +58,9 @@ public class MypageServiceImpl implements MypageService {
 	            Map<String, Object> map = new HashMap<>();
 	            map.put("createdAt", h.getCreatedAt());
 	            map.put("aiReason", h.getAiReason());
-	            map.put("top1Breed", h.getTop1Pet().getBreed());
-	            map.put("top2Breed", h.getTop2Pet().getBreed());
-	            map.put("top3Breed", h.getTop3Pet().getBreed());
+	            map.put("top1Breed", h.getTop1PetId().getBreed());
+	            map.put("top2Breed", h.getTop2PetId().getBreed());
+	            map.put("top3Breed", h.getTop3PetId().getBreed());
 	            return map;
 	        })
 	        .collect(Collectors.toList());
