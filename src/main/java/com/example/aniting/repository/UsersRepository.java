@@ -14,5 +14,7 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 	Optional<Users> findByUsersId(String usersId);
 	boolean existsByUsersId(String usersId);
 	List<Users> findByActiveYnAndInactiveAtBefore(String string, LocalDateTime inactiveAt);
+	int countByActiveYn(String activeYn);
+	int countByJoinAtGreaterThanEqual(LocalDateTime sevenDaysAgo);
 	
 }
