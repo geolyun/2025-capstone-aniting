@@ -1,10 +1,10 @@
-package com.example.aniting.admin.user;
+package com.example.aniting.admin.validate;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class AdminUserViewController {
+public class AdminValidateViewController {
 
 	@GetMapping("/admin/login")
 	public String adminLogin() {

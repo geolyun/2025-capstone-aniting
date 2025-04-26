@@ -1,4 +1,4 @@
-package com.example.aniting.admin.user;
+package com.example.aniting.admin.validate;
 
 import java.util.Map;
 
@@ -17,15 +17,15 @@ import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/admin")
-public class AdminUserController {
+public class AdminValidateController {
 
 	@Autowired
-	private AdminUserService adminUserService;
+	private AdminValidateService adminValidateService;
 	
 	@PostMapping("/adminLogin")
 	public ResponseEntity<?> adminLogin(@RequestBody AdminDTO adminDTO, HttpServletRequest request) {
 		
-		Admin admin = adminUserService.validateAdmin(adminDTO.getAdminId(), adminDTO.getPasswd());
+		Admin admin = adminValidateService.validateAdmin(adminDTO.getAdminId(), adminDTO.getPasswd());
 		
 		if (admin != null) {
 			
