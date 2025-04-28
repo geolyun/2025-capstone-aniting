@@ -77,26 +77,47 @@
     const selectedAnimal = localStorage.getItem("selectedAnimal") || "반려동물";
     document.getElementById("selected-animal-title").innerText = `"${selectedAnimal}" 관련 펫샵 찾기`;
 
-    var mapContainer = document.getElementById('map');
-    var mapOption = {
-        center: new kakao.maps.LatLng(37.5665, 126.9780), // 초기 서울시청 중심
-        level: 5
-    };
-    var map = new kakao.maps.Map(mapContainer, mapOption);
+    var map;
 
-    var ps = new kakao.maps.services.Places();
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+        initMap(37.5665, 126.9780); // 서울시청 기본 중심
+    }
 
-    var keywords = [
-        selectedAnimal + " 분양",
-        selectedAnimal + " 샵",
-        selectedAnimal + " 입양",
-        selectedAnimal + " 펫샵",
-        selectedAnimal + " 동물 병원"
-    ];
+    function success(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        initMap(lat, lng);
+    }
 
-    keywords.forEach(keyword => {
-        ps.keywordSearch(keyword, placesSearchCB, { size: 3 });
-    });
+    function error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+        initMap(37.5665, 126.9780); // 오류 발생 시 기본 서울로
+    }
+
+    function initMap(lat, lng) {
+        var mapContainer = document.getElementById('map');
+        var mapOption = {
+            center: new kakao.maps.LatLng(lat, lng),
+            level: 5
+        };
+        map = new kakao.maps.Map(mapContainer, mapOption);
+
+        var ps = new kakao.maps.services.Places();
+
+        var keywords = [
+            selectedAnimal + " 분양",
+            selectedAnimal + " 샵",
+            selectedAnimal + " 입양",
+            selectedAnimal + " 펫샵",
+            selectedAnimal + " 동물 병원"
+        ];
+
+        keywords.forEach(keyword => {
+            ps.keywordSearch(keyword, placesSearchCB, { size: 3 });
+        });
+    }
 
     function placesSearchCB(data, status, pagination) {
         if (status === kakao.maps.services.Status.OK) {
@@ -117,6 +138,7 @@
         });
     }
 </script>
+
 
 <script src="../soft_assets/js/core/popper.min.js"></script>
 <script src="../soft_assets/js/core/bootstrap.min.js"></script>
