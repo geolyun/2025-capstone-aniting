@@ -1,4 +1,4 @@
-package com.example.aniting.admin.user;
+package com.example.aniting.admin.validate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,7 +7,7 @@ import com.example.aniting.entity.Admin;
 import com.example.aniting.repository.AdminRepository;
 
 @Service
-public class AdminUserServiceImpl implements AdminUserService {
+public class AdminValidateServiceImpl implements AdminValidateService {
 
 	@Autowired
 	private AdminRepository adminRepository;
