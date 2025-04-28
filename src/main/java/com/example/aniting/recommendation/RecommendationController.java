@@ -1,9 +1,8 @@
-package com.example.aniting.controller;
+package com.example.aniting.recommendation;
 
 import com.example.aniting.dto.AnswerRequestDTO;
 import com.example.aniting.dto.RecommendationResultDTO;
 import com.example.aniting.dto.UsersDTO;
-import com.example.aniting.service.RecommendationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
