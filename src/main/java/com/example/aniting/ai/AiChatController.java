@@ -1,4 +1,4 @@
-package com.example.aniting.controller;
+package com.example.aniting.ai;
 
 import com.example.aniting.dto.UsersDTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/recommend")
-public class AiChatViewController {
+public class AiChatController {
 
     @GetMapping("/chat")
     public String chatPage(HttpServletRequest request) {
@@ -26,5 +26,14 @@ public class AiChatViewController {
             return "redirect:/";
         }
         return "ai/result/result";
+    }
+
+    @GetMapping("/map")
+    public String mapPage(HttpServletRequest request) {
+        UsersDTO user = (UsersDTO) request.getSession(false).getAttribute("user");
+        if (user == null) {
+            return "redirect:/";
+        }
+        return "ai/map/map";  // templates/ai/map.html
     }
 }

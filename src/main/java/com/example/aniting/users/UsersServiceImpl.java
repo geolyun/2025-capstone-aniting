@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.aniting.AnitingProjectApplication;
 import com.example.aniting.dto.UsersDTO;
 import com.example.aniting.entity.Users;
-import com.example.aniting.gpt.OpenAiClient;
+import com.example.aniting.ai.OpenAiClient;
 import com.example.aniting.repository.RecommendHistoryRepository;
 import com.example.aniting.repository.RecommendLogRepository;
 import com.example.aniting.repository.RecommendResponseRepository;

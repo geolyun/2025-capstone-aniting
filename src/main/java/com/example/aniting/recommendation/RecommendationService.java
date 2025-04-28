@@ -1,11 +1,10 @@
-package com.example.aniting.service;
+package com.example.aniting.recommendation;
 
 import com.example.aniting.dto.AnswerRequestDTO;
 import com.example.aniting.dto.RecommendationDTO;
 import com.example.aniting.dto.RecommendationResultDTO;
 import com.example.aniting.entity.*;
-import com.example.aniting.gpt.OpenAiClient;
-import com.example.aniting.gpt.RecommendationPrompt;
+import com.example.aniting.ai.OpenAiClient;
 import com.example.aniting.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -133,7 +132,19 @@ public class RecommendationService {
         history.setTop1PetId(resolvePetByName(recs.get(0).getAnimal()));
         history.setTop2PetId(resolvePetByName(recs.get(1).getAnimal()));
         history.setTop3PetId(resolvePetByName(recs.get(2).getAnimal()));
-        history.setAiReason(recs.get(0).getReason());
+
+        StringBuilder aiReasonBuilder = new StringBuilder();
+        for (int i = 0; i < 3; i++) {
+            RecommendationDTO rec = recs.get(i);
+            aiReasonBuilder.append(rec.getRank())
+                    .append("위: ").append(rec.getAnimal())
+                    .append(" - ").append(rec.getReason());
+            if (i != 2) { // 마지막 추천이 아니면 구분자 추가
+                aiReasonBuilder.append(" / ");
+            }
+        }
+        history.setAiReason(aiReasonBuilder.toString());
+
         history.setCreatedAt(LocalDateTime.now());
 
         recommendHistoryRepository.save(history);

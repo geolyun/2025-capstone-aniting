@@ -1,4 +1,4 @@
-package com.example.aniting.controller;
+package com.example.aniting.question;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,9 @@ public class QuestionController {
                 "예상치 못한 상황이 발생했을 때 유연하게 대처하는 편이신가요?",
                 "하루 중 가장 에너지가 많고 활발한 시간대는 언제인가요?",
                 "장시간 집을 비우는 일이 자주 있나요? 있다면 어떤 이유로 비우시나요?",
-                "반려동물에게 바라는 점이나 기대하는 역할이 있다면 무엇인가요?");
+                "반려동물에게 바라는 점이나 기대하는 역할이 있다면 무엇인가요?",
+                "주말에는 주로 집에서 시간을 보내시나요, 아니면 외부 활동을 즐기시나요?"
+        );
 
         return ResponseEntity.ok(questions);
     };

@@ -31,7 +31,7 @@
 		<div class="collapse navbar-collapse justify-content-end" id="navbar">
 			<ul class="navbar-nav d-flex flex-row">
 				<li class="nav-item me-3">
-					<a href="/mypage" class="nav-link text-body font-weight-bold px-2">
+					<a href="/user/mypage" class="nav-link text-body font-weight-bold px-2">
 						<i class="fa fa-user me-1"></i> 마이페이지
 					</a>
 				</li>
@@ -70,12 +70,6 @@
 								</h5>
 								<canvas id="scoreChart" height="280"></canvas>
 							</div>
-
-							<div class="text-center mt-4 mb-4">
-								<a href="/map/petshops" class="btn bg-gradient-warning text-white px-5 py-2 rounded-pill">
-									<i class="fas fa-map-marker-alt me-2"></i>주변 펫샵 둘러보기
-								</a>
-							</div>
 						</div>
 					</div>
 				</div>
@@ -95,14 +89,18 @@
         <a href="/recommend/chat" class="btn btn-sm bg-gradient-warning mt-2">다시 추천받기</a>
       </div>`;
 	} else {
-		// 🐾 추천 리스트 렌더링
+		// 🐾 추천 리스트 + 1~3등 펫샵 보기 버튼 추가
 		const recHtml = result.recommendations.map(r => `
       <div class="mb-4">
         <h5 class="text-dark fw-bold mb-1">
           <i class="fas fa-star text-warning me-2"></i>${r.rank}위: ${r.animal}
         </h5>
         <p class="text-secondary mb-2">${r.reason}</p>
+        <button class="btn btn-sm bg-gradient-info text-white mt-2" onclick="goToMap('${r.animal}')">
+          ${r.rank}등 펫샵 보기
+        </button>
       </div>`).join("");
+
 		document.getElementById("recommend-list").insertAdjacentHTML("afterbegin", recHtml);
 
 		// ✅ 성향 점수 차트 렌더링
@@ -119,7 +117,6 @@
 			const labels = Object.keys(scoreMap).map(k => scoreLabels[k] || k);
 			const data = Object.values(scoreMap);
 
-			// Chart.js 안전 실행
 			window.addEventListener("load", function () {
 				const ctx = document.getElementById('scoreChart')?.getContext('2d');
 				if (ctx) {
@@ -156,7 +153,14 @@
 			});
 		}
 	}
+
+	// ➡️ 동물 클릭 시 localStorage에 저장하고 /map 이동
+	function goToMap(animalName) {
+		localStorage.setItem("selectedAnimal", animalName);
+		window.location.href = "/recommend/map";
+	}
 </script>
+
 
 <script src="../soft_assets/js/core/popper.min.js"></script>
 <script src="../soft_assets/js/core/bootstrap.min.js"></script>

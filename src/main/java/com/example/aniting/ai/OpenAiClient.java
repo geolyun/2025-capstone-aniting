@@ -1,4 +1,4 @@
-package com.example.aniting.gpt;
+package com.example.aniting.ai;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.json.*;
