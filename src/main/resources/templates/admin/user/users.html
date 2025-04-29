@@ -10,63 +10,53 @@
             <h2 class="mb-4">유저 관리</h2>
 	
 	        <!-- 검색 및 필터 -->
-	        <div class="filters mb-4">
-	            <div class="row align-items-center">
-	            
-	            	<!-- 활성화 상태 -->
-	                <div class="col-auto">
-	                    <label for="activeYn">활성화 상태</label>
-	                </div>
-	                <div class="col-2">
-	                    <select id="activeYn" class="form-control">
-	                        <option value="">전체</option>
-	                        <option value="Y">활성</option>
-	                        <option value="N">비활성</option>
-	                    </select>
-	                </div>
-	                
-				    <!-- 가입일 -->
-				    <div class="col-auto">
-				      <label for="joinStartDt" class="col-form-label">가입일</label>
-				    </div>
-				    <div class="col-auto">
-				      <input type="date" class="form-control" id="joinStartDt">
-				    </div>
-				    <div class="col-auto">
-				      <span>~</span>
-				    </div>
-				    <div class="col-auto">
-				      <input type="date" class="form-control" id="joinEndDt">
-				    </div>
-				    
-					<!-- 비활성화일 -->
-				    <div class="col-auto">
-				      <label for="inactiveStartDt" class="col-form-label">비활성화일</label>
-				    </div>
-				    <div class="col-auto">
-				      <input type="date" class="form-control" id="inactiveStartDt">
-				    </div>
-				    <div class="col-auto">
-				      <span>~</span>
-				    </div>
-				    <div class="col-auto">
-				      <input type="date" class="form-control" id="inactiveEndDt">
-				    </div>
-				    
-	            </div>
-	              <!-- 검색창 + 검색버튼 (새로운 줄) -->
-				  <div class="row align-items-center mt-3">
-				    <div class="col-auto">
-				      <label for="keyword" class="col-form-label">검색</label>
-				    </div>
-				    <div class="col-4">
-				      <input type="text" id="keyword" class="form-control" placeholder="검색">
-				    </div>
-				    <div class="col-auto">
-				      <button id="searchBtn" class="btn btn-primary">검색</button>
-				    </div>
-				  </div>
-	        </div>
+			<div class="filters mb-4">
+			  <div class="row g-2">
+			
+			    <!-- 활성화 상태 -->
+			    <div class="col-md-1">
+			      <label class="form-label">활성화 상태</label>
+			      <select id="activeYn" class="form-control">
+			        <option value="">전체</option>
+			        <option value="Y">활성</option>
+			        <option value="N">비활성</option>
+			      </select>
+			    </div>
+			
+			    <!-- 가입일 -->
+			    <div class="col-md-3">
+			      <label class="form-label">가입일</label>
+			      <div class="d-flex">
+			        <input type="date" id="joinStartDt" class="form-control me-1">
+			        <span class="align-self-center">~</span>
+			        <input type="date" id="joinEndDt" class="form-control ms-1">
+			      </div>
+			    </div>
+			
+			    <!-- 비활성화일 -->
+			    <div class="col-md-3">
+			      <label class="form-label">비활성화일</label>
+			      <div class="d-flex">
+			        <input type="date" id="inactiveStartDt" class="form-control me-1">
+			        <span class="align-self-center">~</span>
+			        <input type="date" id="inactiveEndDt" class="form-control ms-1">
+			      </div>
+			    </div>
+			
+			    <!-- 검색어 -->
+			    <div class="col-md-2">
+			      <label class="form-label">검색</label>
+			      <input type="text" id="keyword" class="form-control" placeholder="아이디 또는 이름">
+			    </div>
+			
+			    <!-- 버튼 -->
+			    <div class="col-md-2 d-flex align-items-end">
+			      <button id="searchBtn" class="btn btn-primary me-2 w-50">검색</button>
+			      <button id="resetBtn" class="btn btn-secondary w-50">초기화</button>
+			    </div>
+			
+			  </div>
+			</div>
 	
 	        <!-- 유저 테이블 -->
 	        <div class="table-responsive">
@@ -150,7 +140,6 @@
 	        inactiveEndDt: inactiveEndDt
 	      },
 	      success: function(response) {
-	    	console.log("응답 확인:", response);
 	        const tbody = $("#userTableBody");
 	        tbody.empty();
 	
@@ -267,7 +256,18 @@
 	  $('#searchBtn').on('click', function() {
 	    loadUsers();
 	  });
-	
+	  
+	  // 필터 초기화 버튼
+	  $('#resetBtn').on('click', function() {
+	    $('#activeYn').val('');
+	    $('#joinStartDt').val('');
+	    $('#joinEndDt').val('');
+	    $('#inactiveStartDt').val('');
+	    $('#inactiveEndDt').val('');
+	    $('#keyword').val('');
+	    loadUsers(); // 초기화 후 다시 로딩
+	  });
+		
 	  // 페이지 로딩 시 최초 데이터 로딩
 	  loadUsers();
 	  
