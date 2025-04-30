@@ -73,212 +73,205 @@
         </div>
 
         <!-- 반려동물 수정 모달 -->
-        <div id="editModal" class="modal" style="display: none;">
-            <div class="modal-content" style="background: white; padding: 20px; border-radius: 10px; max-width: 600px; margin: 100px auto;">
-                <h5>반려동물 수정</h5>
-                <form id="editForm">
-                    <input type="hidden" id="editPetId">
-
-                    <div class="mb-3">
-                        <label for="editPetNm" class="form-label">이름</label>
-                        <input type="text" id="editPetNm" class="form-control" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="editSpecies" class="form-label">종</label>
-                        <input type="text" id="editSpecies" class="form-control">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="editBreed" class="form-label">품종</label>
-                        <input type="text" id="editBreed" class="form-control">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="editPersonalityTags" class="form-label">성격 태그</label>
-                        <input type="text" id="editPersonalityTags" class="form-control">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="editCareLevel" class="form-label">관리 난이도</label>
-                        <input type="text" id="editCareLevel" class="form-control">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="editIsSpecial" class="form-label">특수동물 여부 (Y/N)</label>
-                        <select id="editIsSpecial" class="form-select">
-                            <option value="Y">예</option>
-                            <option value="N">아니오</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="editDescription" class="form-label">설명</label>
-                        <textarea id="editDescription" class="form-control" rows="3"></textarea>
-                    </div>
-
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-success">저장</button>
-                        <button type="button" id="closeEditModal" class="btn btn-secondary">취소</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+		<div id="editModal" class="modal" style="display: none;">
+		  <div class="modal-content" style="background: white; padding: 20px; border-radius: 10px; max-width: 600px; margin: 100px auto;">
+		    <h5>반려동물 수정</h5>
+		    <form id="editForm">
+		      <input type="hidden" id="editPetId" />
+		
+		      <div class="mb-3">
+		        <label for="editPetNm" class="form-label">이름</label>
+		        <input type="text" id="editPetNm" class="form-control" required />
+		      </div>
+		
+		      <div class="mb-3">
+		        <label for="editSpecies" class="form-label">종</label>
+		        <input type="text" id="editSpecies" class="form-control" />
+		      </div>
+		
+		      <div class="mb-3">
+		        <label for="editBreed" class="form-label">품종</label>
+		        <input type="text" id="editBreed" class="form-control" />
+		      </div>
+		
+		      <div class="mb-3">
+		        <label for="editPersonalityTags" class="form-label">성격 태그</label>
+		        <input type="text" id="editPersonalityTags" class="form-control" />
+		      </div>
+		
+		      <div class="mb-3">
+		        <label for="editCareLevel" class="form-label">관리 난이도</label>
+		        <input type="text" id="editCareLevel" class="form-control" />
+		      </div>
+		
+		      <div class="mb-3">
+		        <label for="editIsSpecial" class="form-label">특수동물 여부 (Y/N)</label>
+		        <select id="editIsSpecial" class="form-select">
+		          <option value="Y">예</option>
+		          <option value="N">아니오</option>
+		        </select>
+		      </div>
+		
+		      <div class="mb-3">
+		        <label for="editCategoryIds" class="form-label">카테고리 번호</label>
+		        <input type="text" id="editCategoryIds" class="form-control" placeholder="예: 1, 2, 3" />
+		      </div>
+		
+		      <div class="mb-3">
+		        <label for="editDescription" class="form-label">설명</label>
+		        <textarea id="editDescription" class="form-control" rows="3"></textarea>
+		      </div>
+		
+		      <div class="text-end">
+		        <button type="submit" class="btn btn-success">저장</button>
+		        <button type="button" id="closeEditModal" class="btn btn-secondary">취소</button>
+		      </div>
+		    </form>
+		  </div>
+		</div>
 
     </main>
 </div>
 
 <!-- Script Fragment -->
 <div layout:fragment="script">
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      loadPets();
 
+      document.getElementById('searchBtn').addEventListener('click', function () {
         loadPets();
+      });
 
-        document.getElementById('searchBtn').addEventListener('click', function() {
-            loadPets();
-        });
-        
-        document.getElementById('resetBtn').addEventListener('click', function() {
-            document.getElementById('speciesFilter').value = '';
-            document.getElementById('breedFilter').value = '';
-            document.getElementById('careLevelFilter').value = '';
-            document.getElementById('specialFilter').value = '';
-            document.getElementById('keywordFilter').value = '';
-            loadPets(); // 초기화 후 다시 전체 목록 조회
-        });
+      document.getElementById('resetBtn').addEventListener('click', function () {
+        document.getElementById('speciesFilter').value = '';
+        document.getElementById('breedFilter').value = '';
+        document.getElementById('careLevelFilter').value = '';
+        document.getElementById('specialFilter').value = '';
+        document.getElementById('keywordFilter').value = '';
+        loadPets();
+      });
 
-        document.getElementById('closeEditModal').addEventListener('click', function() {
-            document.getElementById('editModal').style.display = 'none';
-        });
+      document.getElementById('closeEditModal').addEventListener('click', function () {
+        document.getElementById('editModal').style.display = 'none';
+      });
 
-        document.getElementById('editForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+      document.getElementById('editForm').addEventListener('submit', function (e) {
+        e.preventDefault();
 
-            const petId = document.getElementById('editPetId').value;
-            const data = {
-                petNm: document.getElementById('editPetNm').value,
-                species: document.getElementById('editSpecies').value,
-                breed: document.getElementById('editBreed').value,
-                personalityTags: document.getElementById('editPersonalityTags').value,
-                careLevel: document.getElementById('editCareLevel').value,
-                isSpecail: document.getElementById('editIsSpecial').value,
-                description: document.getElementById('editDescription').value
-            };
+        const petId = document.getElementById('editPetId').value;
+        const data = {
+          petNm: document.getElementById('editPetNm').value,
+          species: document.getElementById('editSpecies').value,
+          breed: document.getElementById('editBreed').value,
+          personalityTags: document.getElementById('editPersonalityTags').value,
+          careLevel: document.getElementById('editCareLevel').value,
+          isSpecial: document.getElementById('editIsSpecial').value,
+          categoryIds: document.getElementById('editCategoryIds').value, // ✅ 추가
+          description: document.getElementById('editDescription').value
+        };
 
-            fetch(`/api/admin/pets/${petId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('수정이 완료되었습니다.');
-                    document.getElementById('editModal').style.display = 'none';
-                    loadPets();
-                } 
-                else {
-                    alert('수정에 실패했습니다.');
-                }
-            })
-            .catch(error => console.error('Error updating pet:', error));
-        });
-        
+        fetch(`/api/admin/pets/${petId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+          .then(response => {
+            if (response.ok) {
+              alert('수정이 완료되었습니다.');
+              document.getElementById('editModal').style.display = 'none';
+              loadPets();
+            } else {
+              alert('수정에 실패했습니다.');
+            }
+          })
+          .catch(error => console.error('Error updating pet:', error));
+      });
     });
 
     function loadPets() {
+      const species = document.getElementById('speciesFilter').value;
+      const breed = document.getElementById('breedFilter').value;
+      const careLevel = document.getElementById('careLevelFilter').value;
+      const isSpecial = document.getElementById('specialFilter').value;
+      const keyword = document.getElementById('keywordFilter').value;
 
-        const species = document.getElementById('speciesFilter').value;
-        const breed = document.getElementById('breedFilter').value;
-        const careLevel = document.getElementById('careLevelFilter').value;
-        const isSpecial = document.getElementById('specialFilter').value;
-        const keyword = document.getElementById('keywordFilter').value;
+      let query = `/api/admin/pets?species=${species}&breed=${breed}&careLevel=${careLevel}&isSpecial=${isSpecial}&keyword=${keyword}`;
 
-        let query = `/api/admin/pets?species=${species}&breed=${breed}&careLevel=${careLevel}&isSpecial=${isSpecial}&keyword=${keyword}`;
-
-        fetch(query)
-            .then(response => response.json())
-            .then(data => renderPets(data))
-            .catch(error => console.error('Error fetching pets:', error));
-        
+      fetch(query)
+        .then(response => response.json())
+        .then(data => renderPets(data))
+        .catch(error => console.error('Error fetching pets:', error));
     }
 
     function renderPets(pets) {
+      const tbody = document.getElementById('petTableBody');
+      tbody.innerHTML = '';
 
-        const tbody = document.getElementById('petTableBody');
-        tbody.innerHTML = '';
+      if (pets.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="8" class="text-center">조회된 데이터가 없습니다.</td>`;
+        tbody.appendChild(tr);
+        return;
+      }
 
-        if (pets.length === 0) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td colspan="8" class="text-center">조회된 데이터가 없습니다.</td>`;
-            tbody.appendChild(tr);
-            return;
-        }
+      pets.forEach(pet => {
+        const tr = document.createElement('tr');
 
-        pets.forEach(pet => {
+        tr.innerHTML = `
+          <td>${pet.species || '-'}</td>
+          <td>${pet.breed || '-'}</td>
+          <td>${pet.personalityTags || '-'}</td>
+          <td>${pet.careLevel || '-'}</td>
+          <td>${pet.isSpecial === 'Y' ? '예' : '아니오'}</td>
+          <td>${pet.description || '-'}</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-warning" onclick="openEditModal(${pet.petId})">수정</button>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-danger" onclick="deletePet(${pet.petId})">삭제</button>
+          </td>
+        `;
 
-            const tr = document.createElement('tr');
-
-            tr.innerHTML = `
-                <td>${pet.species || '-'}</td>
-                <td>${pet.breed || '-'}</td>
-                <td>${pet.personalityTags || '-'}</td>
-                <td>${pet.careLevel || '-'}</td>
-                <td>${pet.isSpecail === 'Y' ? '예' : '아니오'}</td>
-                <td>${pet.description || '-'}</td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-warning" onclick="openEditModal(${pet.petId})">수정</button>
-                </td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-danger" onclick="deletePet(${pet.petId})">삭제</button>
-                </td>
-            `;
-
-            tbody.appendChild(tr);
-            
-        });
-        
+        tbody.appendChild(tr);
+      });
     }
 
     function openEditModal(petId) {
-        fetch(`/api/admin/pets/${petId}`)
-            .then(response => response.json())
-            .then(pet => {
-                document.getElementById('editPetId').value = pet.petId;
-                document.getElementById('editPetNm').value = pet.petNm;
-                document.getElementById('editSpecies').value = pet.species || '';
-                document.getElementById('editBreed').value = pet.breed || '';
-                document.getElementById('editPersonalityTags').value = pet.personalityTags || '';
-                document.getElementById('editCareLevel').value = pet.careLevel || '';
-                document.getElementById('editIsSpecial').value = pet.isSpecail || 'N';
-                document.getElementById('editDescription').value = pet.description || '';
-
-                document.getElementById('editModal').style.display = 'block';
-            })
-            .catch(error => console.error('Error loading pet details:', error));
+      fetch(`/api/admin/pets/${petId}`)
+        .then(response => response.json())
+        .then(pet => {
+          document.getElementById('editPetId').value = pet.petId;
+          document.getElementById('editPetNm').value = pet.petNm || '';
+          document.getElementById('editSpecies').value = pet.species || '';
+          document.getElementById('editBreed').value = pet.breed || '';
+          document.getElementById('editPersonalityTags').value = pet.personalityTags || '';
+          document.getElementById('editCareLevel').value = pet.careLevel || '';
+          document.getElementById('editIsSpecial').value = pet.isSpecial || 'N';
+          document.getElementById('editCategoryIds').value = pet.categoryIds || ''; // ✅ 추가
+          document.getElementById('editDescription').value = pet.description || '';
+          document.getElementById('editModal').style.display = 'block';
+        })
+        .catch(error => console.error('Error loading pet details:', error));
     }
 
     function deletePet(petId) {
-
-        if (confirm('정말 삭제하시겠습니까?')) {
-            fetch(`/api/admin/pets/${petId}`, {
-                method: 'DELETE'
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('삭제되었습니다.');
-                    loadPets();
-                } 
-                else {
-                    alert('삭제에 실패했습니다.');
-                }
-            })
-            .catch(error => console.error('Error deleting pet:', error));
-        }
-        
+      if (confirm('정말 삭제하시겠습니까?')) {
+        fetch(`/api/admin/pets/${petId}`, {
+          method: 'DELETE'
+        })
+          .then(response => {
+            if (response.ok) {
+              alert('삭제되었습니다.');
+              loadPets();
+            } else {
+              alert('삭제에 실패했습니다.');
+            }
+          })
+          .catch(error => console.error('Error deleting pet:', error));
+      }
     }
-    
-</script>
+  </script>
 </div>
 
 </html>
