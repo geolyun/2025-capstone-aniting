@@ -17,7 +17,7 @@ public class RecommendationPrompt {
     public static String buildQuestionPrompt() {
         return "당신은 반려동물 추천 전문가입니다. 사용자의 성향을 파악하기 위해 " +
                 "activity, sociability, care, emotional_bond, environment, routine " +
-                "6개 기준을 고루 다루는 질문 10개를 한글로 작성해주세요. " +
+                "6개 기준을 고루 다루는 질문을 9개에서 11개 내의 개수로 한글로 작성해주세요. " +
                 "각 질문은 짧고 명확해야 합니다. " +
                 "반드시 JSON 배열만 반환하세요. 다른 설명 없이 배열([])만 출력하세요.";
     }
