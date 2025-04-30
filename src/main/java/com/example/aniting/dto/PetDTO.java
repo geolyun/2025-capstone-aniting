@@ -23,7 +23,7 @@ public class PetDTO {
 
     private String isSpecial;
 
-    private Long category;
+    private String categoryIds;
 
     private String description;
 }
