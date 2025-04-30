@@ -21,7 +21,7 @@ public class PetDTO {
 
     private String careLevel;
 
-    private String isSpecail;
+    private String isSpecial;
 
     private Long category;
 
