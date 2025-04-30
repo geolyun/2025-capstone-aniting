@@ -154,9 +154,23 @@
 
 		localStorage.setItem("recommendationResult", JSON.stringify(data));
 		document.getElementById("view-result-btn").classList.remove("d-none");
+		addGPTMessage("✅ 분석 완료되었습니다!")
 	}
 
 	document.addEventListener('DOMContentLoaded', function() {
+		addGPTMessage(`
+    🐾 애니팅에 오신 걸 환영해요!<br>
+    당신에게 꼭 맞는 반려동물을 추천해드릴게요.<br>
+    성격, 생활환경, 취향 등을 알려주시면, 대화를 통해 함께 찾아가요!<br><br>
+
+    💬 <strong>어떻게 진행되나요?</strong><br>
+    • 몇 가지 질문을 드릴 거예요.<br>
+    • 답변을 바탕으로 성향을 분석해요.<br>
+    • 추천 결과는 상위 3종을 순위와 설명과 함께 알려드려요.<br><br>
+
+    궁금한 점이 있다면 언제든지 물어보세요!<br>
+    그럼 시작해볼까요? 😊
+  `)
 		loadQuestions();
 		document.getElementById("send-btn").addEventListener("click", sendUserAnswer);
 		document.getElementById("user-input").addEventListener("keypress", function (e) {

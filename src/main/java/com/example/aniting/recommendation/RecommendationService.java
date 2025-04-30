@@ -28,20 +28,6 @@ public class RecommendationService {
     private final PetRepository petRepository;
     private final CategoryRepository categoryRepository;
 
-    // 카테고리 점수 부여 기준 데이터가 비어있으면 DB에 데이터 삽입
-    private void initCategoryDataIfEmpty() {
-        if (categoryRepository.count() == 0) {
-            List<Category> categories = List.of(
-                    new Category(null, "activity", "활동성", "하루의 에너지 소비량 및 야외 활동 선호도"),
-                    new Category(null, "sociability", "사회성", "다른 사람/동물과의 교류 능력"),
-                    new Category(null, "care", "돌봄 의지", "돌봄 시간과 정성에 대한 의지"),
-                    new Category(null, "emotional_bond", "정서적 교감", "감정 공유와 유대감 선호도"),
-                    new Category(null, "environment", "환경 적합성", "생활 공간 조건 및 특성"),
-                    new Category(null, "routine", "일상 루틴", "일과 패턴의 안정성")
-            );
-            categoryRepository.saveAll(categories);
-        }
-    }
 
     public List<String> generateQuestions() {
         String prompt = RecommendationPrompt.buildQuestionPrompt();
@@ -65,12 +51,12 @@ public class RecommendationService {
             String prompt,
             String aiResponse
     ) {
+        initCategoryDataIfEmpty();
         saveRecommendResponses(userId, requestDto);
         saveUserScores(userId, resultDto.getUserScores());
         saveRecommendedPets(resultDto.getRecommendations());
         saveRecommendHistory(userId, resultDto.getRecommendations());
         saveRecommendLog(userId, prompt, aiResponse);
-        initCategoryDataIfEmpty();
     }
 
     private void saveRecommendResponses(String usersId, AnswerRequestDTO requestDto) {
@@ -167,6 +153,21 @@ public class RecommendationService {
         log.setAiResponse(aiResponse);
         log.setCreatedAt(LocalDateTime.now());
         recommendLogRepository.save(log);
+    }
+
+    // 카테고리 점수 부여 기준 데이터가 비어있으면 DB에 데이터 삽입
+    private void initCategoryDataIfEmpty() {
+        if (categoryRepository.count() == 0) {
+            List<Category> categories = List.of(
+                    new Category(null, "activity", "활동성", "하루의 에너지 소비량 및 야외 활동 선호도"),
+                    new Category(null, "sociability", "사회성", "다른 사람/동물과의 교류 능력"),
+                    new Category(null, "care", "돌봄 의지", "돌봄 시간과 정성에 대한 의지"),
+                    new Category(null, "emotional_bond", "정서적 교감", "감정 공유와 유대감 선호도"),
+                    new Category(null, "environment", "환경 적합성", "생활 공간 조건 및 특성"),
+                    new Category(null, "routine", "일상 루틴", "일과 패턴의 안정성")
+            );
+            categoryRepository.saveAll(categories);
+        }
     }
 
     private Pet resolvePetByName(String name) {
