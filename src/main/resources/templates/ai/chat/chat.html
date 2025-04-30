@@ -6,9 +6,15 @@
 	<title>애니팅 | 반려동물 추천 AI</title>
 
 
+	<link rel="icon" type="image/png" href="/soft_assets/img/favicon.png">
 	<link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-	<link href="/soft_assets/css/soft-ui-dashboard.css" rel="stylesheet" />
+	<link href="https://demos.creative-tim.com/soft-ui-dashboard/assets/css/nucleo-icons.css" rel="stylesheet" />
+	<link href="https://demos.creative-tim.com/soft-ui-dashboard/assets/css/nucleo-svg.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	<link id="pagestyle" href="../soft_assets/css/soft-ui-dashboard.css?v=1.1.0" rel="stylesheet" />
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="/js/logout.js"></script> <!-- 로그아웃 공통 스크립트 추가 -->
 </head>
 
 <body class="g-sidenav-show bg-gray-100 virtual-reality">
@@ -28,7 +34,9 @@
 		<div class="collapse navbar-collapse justify-content-end">
 			<ul class="navbar-nav d-flex flex-row">
 				<li class="nav-item me-3"><a href="/user/mypage" class="nav-link text-body font-weight-bold"><i class="fa fa-user me-1"></i> 마이페이지</a></li>
-				<li class="nav-item"><a href="/logout" class="nav-link text-body font-weight-bold"><i class="fa fa-sign-out-alt me-1"></i> 로그아웃</a></li>
+				<a href="javascript:void(0);" id="logoutBtn" class="nav-link text-body font-weight-bold">
+				  <i class="fa fa-sign-out-alt me-1"></i> 로그아웃
+				</a>
 			</ul>
 		</div>
 	</div>
