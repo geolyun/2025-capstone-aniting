@@ -5,14 +5,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>애니팅 | 반려동물 추천 AI</title>
 
-	<!-- 폰트 & 아이콘 -->
-	<link rel="icon" type="image/png" href="/soft_assets/img/favicon.png">	
+
 	<link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 	<link href="/soft_assets/css/soft-ui-dashboard.css" rel="stylesheet" />
 </head>
 
 <body class="g-sidenav-show bg-gray-100 virtual-reality">
+
 <!-- 네비게이션 -->
 <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur">
 	<div class="container-fluid py-2 px-3 d-flex justify-content-between align-items-center">
@@ -52,17 +52,19 @@
 
 							<!-- 입력창 -->
 							<div class="card-footer bg-white d-flex">
-								<input type="text" class="form-control me-2 border-radius-xl" placeholder="메시지를 입력하세요...">
-								<button class="btn bg-gradient-primary text-white px-4" id="send-button">
+								<input type="text" id="user-input" class="form-control me-2 border-radius-xl" placeholder="메시지를 입력하세요...">
+								<button class="btn bg-gradient-primary text-white px-4" id="send-btn">
 									<i class="fas fa-arrow-up"></i>
 								</button>
 							</div>
 
+							<!-- 결과 보기 버튼 -->
 							<div class="text-center my-4">
 								<button id="view-result-btn" class="btn bg-gradient-warning text-white px-5 py-2 rounded-pill d-none">
 									<i class="fas fa-paw me-2"></i> 추천 결과 보기
 								</button>
 							</div>
+
 						</div>
 					</div>
 				</div>
@@ -71,14 +73,15 @@
 	</main>
 </div>
 
+<!-- JavaScript -->
 <script>
 	let questions = [];
 	let currentIndex = 0;
-	const answers = {};
+	let answers = [];
 
 	async function loadQuestions() {
 		try {
-			const res = await fetch("/api/questions");
+			const res = await fetch("/recommend/questions");
 			questions = await res.json();
 			currentIndex = 0;
 			addGPTMessage(questions[currentIndex]);
@@ -90,13 +93,13 @@
 	function addGPTMessage(text) {
 		const box = document.getElementById("chat-box");
 		const html = `
-      <div class="d-flex align-items-start mb-4">
-        <div class="me-3">
-          <div class="avatar avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">GPT</div>
-        </div>
-        <div class="p-3 rounded-3 bg-white shadow-sm w-100">${text}</div>
+    <div class="d-flex align-items-start mb-4">
+      <div class="me-3">
+        <div class="avatar avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">GPT</div>
       </div>
-    `;
+      <div class="p-3 rounded-3 bg-white shadow-sm w-100">${text}</div>
+    </div>
+  `;
 		box.insertAdjacentHTML('beforeend', html);
 		box.scrollTop = box.scrollHeight;
 	}
@@ -104,24 +107,28 @@
 	function addUserMessage(text) {
 		const box = document.getElementById("chat-box");
 		const html = `
-      <div class="d-flex justify-content-end mb-4 align-items-start">
-        <div class="p-3 rounded-3 bg-gradient-info text-white shadow-sm w-75">${text}</div>
-        <div class="avatar avatar-sm bg-gradient-info text-white rounded-circle d-flex align-items-center justify-content-center ms-3">나</div>
-      </div>
-    `;
+    <div class="d-flex justify-content-end mb-4 align-items-start">
+      <div class="p-3 rounded-3 bg-gradient-info text-white shadow-sm w-75">${text}</div>
+      <div class="avatar avatar-sm bg-gradient-info text-white rounded-circle d-flex align-items-center justify-content-center ms-3">나</div>
+    </div>
+  `;
 		box.insertAdjacentHTML('beforeend', html);
 		box.scrollTop = box.scrollHeight;
 	}
 
 	function sendUserAnswer() {
-		const input = document.querySelector(".card-footer input");
+		const input = document.getElementById('user-input');
 		const text = input.value.trim();
 		if (!text) return;
 
 		addUserMessage(text);
-		answers[questions[currentIndex]] = text;
-		input.value = "";
+		answers.push({
+			question: questions[currentIndex],
+			answer: text,
+			source: "generated"
+		});
 
+		input.value = "";
 		currentIndex++;
 		if (currentIndex < questions.length) {
 			setTimeout(() => addGPTMessage(questions[currentIndex]), 300);
@@ -131,39 +138,40 @@
 		}
 	}
 
-	document.getElementById("view-result-btn").addEventListener("click", () => {
-		window.location.href = "/recommend/result";
-	});
-
-	document.getElementById("send-button").addEventListener("click", sendUserAnswer);
-
-	document.querySelector(".card-footer input").addEventListener("keypress", function (e) {
-		if (e.key === "Enter") {
-			sendUserAnswer();
+	async function submitAnswers() {
+		const userId = localStorage.getItem('userId');
+		if (!userId) {
+			alert('로그인이 필요합니다.');
+			window.location.href = "/";
+			return;
 		}
-	});
 
-	function submitAnswers() {
-		fetch("/api/recommend", {
+		const res = await fetch("/recommend/submit", {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: { "Content-Type": "application/json", "user-id": userId },
 			body: JSON.stringify({ answers })
-		})
-				.then(res => res.json())
-				.then(data => {
-					// 결과 저장
-					localStorage.setItem("recommendationResult", JSON.stringify(data));
+		});
+		const data = await res.json();
 
-					// "결과 보기" 버튼 보여주기
-					document.getElementById("view-result-btn").classList.remove("d-none");
-				})
-				.catch(() => {
-					addGPTMessage("❌ 추천 결과를 불러오는 데 실패했습니다.");
-				});
+		localStorage.setItem("recommendationResult", JSON.stringify(data));
+		document.getElementById("view-result-btn").classList.remove("d-none");
 	}
 
-	window.onload = loadQuestions;
+	document.addEventListener('DOMContentLoaded', function() {
+		loadQuestions();
+		document.getElementById("send-btn").addEventListener("click", sendUserAnswer);
+		document.getElementById("user-input").addEventListener("keypress", function (e) {
+			if (e.key === "Enter") sendUserAnswer();
+		});
+		document.getElementById("view-result-btn").addEventListener("click", function() {
+			window.location.href = "/recommend/result";
+		});
+	});
 </script>
+
+<!-- Core JS -->
+<script src="/soft_assets/js/core/popper.min.js"></script>
+<script src="/soft_assets/js/core/bootstrap.min.js"></script>
 
 </body>
 </html>

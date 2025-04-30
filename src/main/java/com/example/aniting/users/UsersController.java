@@ -56,7 +56,8 @@ public class UsersController {
             return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "로그인 성공",
-                "usersNm", user.getUsersNm()
+                "usersNm", user.getUsersNm(),
+                "usersId", user.getUsersId()
             ));
             
         } 

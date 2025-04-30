@@ -43,7 +43,7 @@ public class OpenAiClient {
 
             // 🔽 GPT 응답에서 "content"만 추출 (extractGPTContent 역할)
             JSONObject jsonResponse = new JSONObject(response.toString());
-            String content = jsonResponse.getJSONArray("choices")
+            String content = jsonResponse.getJSONArray( "choices")
                     .getJSONObject(0)
                     .getJSONObject("message")
                     .getString("content")
