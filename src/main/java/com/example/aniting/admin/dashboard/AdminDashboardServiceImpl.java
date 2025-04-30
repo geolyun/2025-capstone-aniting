@@ -204,7 +204,8 @@ public class AdminDashboardServiceImpl implements AdminDashboardSerivce {
 
         categoryRepository.findAll().forEach(category -> {
             labels.add(category.getCategory());
-            scores.add(scoreRepository.avgScoreByCategory(category.getCategoryId()));
+            Double avg = scoreRepository.avgScoreByCategory(category.getCategoryId());
+            scores.add(avg != null ? avg : 0.0);
         });
 
         return Map.of(

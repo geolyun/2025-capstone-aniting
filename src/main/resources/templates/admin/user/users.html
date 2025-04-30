@@ -4,101 +4,276 @@
       layout:decorate="~{common/layout/adminLayout.html}">
 
 <div layout:fragment="content">
-    <main class="content">
+    <main id="main" class="content">
+    
         <div class="container-fluid">
-            <h1 class="h3 mb-3">유저 관리</h1>
-
-            <!-- 필터 영역 -->
-            <div class="row mb-3">
-                <div class="col-md-2">
-                    <select id="statusFilter" class="form-select">
-                        <option value="">상태(전체)</option>
-                        <option value="active">활성</option>
-                        <option value="inactive">비활성</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <input type="text" id="searchKeyword" class="form-control" placeholder="아이디, 이름 검색">
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100">검색</button>
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-secondary w-100">초기화</button>
-                </div>
-            </div>
-
-            <!-- 날짜 필터 -->
-            <div class="row mb-4">
-                <div class="col-auto">
-                    <label class="form-label">가입일:</label>
-                </div>
-                <div class="col">
-                    <input type="date" class="form-control" />
-                </div>
-                <div class="col">
-                    <input type="date" class="form-control" />
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">비활성화일:</label>
-                </div>
-                <div class="col">
-                    <input type="date" class="form-control" />
-                </div>
-                <div class="col">
-                    <input type="date" class="form-control" />
-                </div>
-            </div>
-
-            <!-- 유저 테이블 -->
-            <div class="card">
-                <div class="card-body">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>아이디</th>
-                                <th>이름</th>
-                                <th>가입일</th>
-                                <th>비활성화일</th>
-                                <th>상태</th>
-                                <th>수정</th>
-                                <th>활성/비활성</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>testuser01</td>
-                                <td>홍길동</td>
-                                <td>2024-12-01</td>
-                                <td>-</td>
-                                <td><span class="badge bg-success">활성</span></td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-warning">수정</button>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-danger">비활성화</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>inactiveUser02</td>
-                                <td>김영희</td>
-                                <td>2023-07-15</td>
-                                <td>2024-01-03</td>
-                                <td><span class="badge bg-danger">비활성</span></td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-warning">수정</button>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-success">활성화</button>
-                                </td>
-                            </tr>
-                            <!-- 더미 데이터 추가 가능 -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+            <h2 class="mb-4">유저 관리</h2>
+	
+	        <!-- 검색 및 필터 -->
+			<div class="filters mb-4">
+			  <div class="row g-2">
+			
+			    <!-- 활성화 상태 -->
+			    <div class="col-md-1">
+			      <label class="form-label">활성화 상태</label>
+			      <select id="activeYn" class="form-control">
+			        <option value="">전체</option>
+			        <option value="Y">활성</option>
+			        <option value="N">비활성</option>
+			      </select>
+			    </div>
+			
+			    <!-- 가입일 -->
+			    <div class="col-md-3">
+			      <label class="form-label">가입일</label>
+			      <div class="d-flex">
+			        <input type="date" id="joinStartDt" class="form-control me-1">
+			        <span class="align-self-center">~</span>
+			        <input type="date" id="joinEndDt" class="form-control ms-1">
+			      </div>
+			    </div>
+			
+			    <!-- 비활성화일 -->
+			    <div class="col-md-3">
+			      <label class="form-label">비활성화일</label>
+			      <div class="d-flex">
+			        <input type="date" id="inactiveStartDt" class="form-control me-1">
+			        <span class="align-self-center">~</span>
+			        <input type="date" id="inactiveEndDt" class="form-control ms-1">
+			      </div>
+			    </div>
+			
+			    <!-- 검색어 -->
+			    <div class="col-md-2">
+			      <label class="form-label">검색</label>
+			      <input type="text" id="keyword" class="form-control" placeholder="아이디 또는 이름">
+			    </div>
+			
+			    <!-- 버튼 -->
+			    <div class="col-md-2 d-flex align-items-end">
+			      <button id="searchBtn" class="btn btn-primary me-2 w-50">검색</button>
+			      <button id="resetBtn" class="btn btn-secondary w-50">초기화</button>
+			    </div>
+			
+			  </div>
+			</div>
+	
+	        <!-- 유저 테이블 -->
+	        <div class="table-responsive">
+	            <table class="table table-custom">
+	                <thead>
+	                    <tr>
+	                        <th>회원번호</th>
+	                        <th>아이디</th>
+	                        <th>이름</th>
+	                        <th>활성화 여부</th>
+	                        <th>가입일</th>
+	                        <th>비활성화일</th>
+	                        <th>수정</th>
+	                        <th>삭제</th>
+	                    </tr>
+	                </thead>
+	                <tbody id="userTableBody">
+	                    <!-- 서버에서 데이터 가져와서 여기에 렌더링 -->
+	                </tbody>
+	            </table>
+	        </div>
+	    </div>
+	
+	    <!-- 유저 수정 모달 -->
+	    <div id="editModal" class="modal">
+	        <h5>유저 수정</h5>
+	        <form id="editForm">
+	            <input type="hidden" id="editUsersNo">
+	
+	            <div class="mb-3">
+	                <label for="editUsersId" class="form-label">아이디</label>
+	                <input type="text" id="editUsersId" class="form-control" readonly>
+	            </div>
+	
+	            <div class="mb-3">
+	                <label for="editUsersNm" class="form-label">이름</label>
+	                <input type="text" id="editUsersNm" class="form-control">
+	            </div>
+	
+	            <div class="mb-3">
+	                <label for="editActiveYn" class="form-label">활성화 여부</label>
+	                <select id="editActiveYn" class="form-select">
+	                    <option value="Y">활성</option>
+	                    <option value="N">비활성</option>
+	                </select>
+	            </div>
+	
+	            <div class="text-end">
+	                <button type="submit" class="btn btn-success">저장</button>
+	                <button type="button" id="closeEditModal" class="btn btn-secondary">취소</button>
+	            </div>
+	        </form>
+	    </div>
     </main>
+</div>
+
+<div layout:fragment="script">
+<script>
+
+	$(document).ready(function() {
+	
+	  function loadUsers() {
+
+	    const keyword = $('#keyword').val();
+	    const activeYn = $('#activeYn').val();
+	    const joinStartDt = $('#joinStartDt').val();
+	    const joinEndDt = $('#joinEndDt').val();
+	    const inactiveStartDt = $('#inactiveStartDt').val();
+	    const inactiveEndDt = $('#inactiveEndDt').val();
+	
+	    $.ajax({
+
+	      type: "GET",
+	      url: "/api/admin/users",
+	      data: {
+	        keyword: keyword,
+	        activeYn: activeYn,
+	        joinStartDt: joinStartDt,
+	        joinEndDt: joinEndDt,
+	        inactiveStartDt: inactiveStartDt,
+	        inactiveEndDt: inactiveEndDt
+	      },
+	      success: function(response) {
+	        const tbody = $("#userTableBody");
+	        tbody.empty();
+	
+	        if (response.length === 0) {
+	          tbody.append("<tr><td colspan='8' class='text-center'>조회된 데이터가 없습니다.</td></tr>");
+	        } 
+	        else {
+	          response.forEach(function(user, index) {
+	            const row = `
+	              <tr>
+	                <td>${user.usersNo}</td>
+	                <td>${user.usersId}</td>
+	                <td>${user.usersNm}</td>
+	                <td>${user.activeYn === 'Y' ? '활성' : '비활성'}</td>
+	                <td>${user.joinAt ? user.joinAt.substring(0, 10) : '-'}</td>
+	                <td>${user.inactiveAt ? user.inactiveAt.substring(0, 10) : '-'}</td>
+	                <td><button class="btn btn-sm btn-primary edit-btn" data-id="${user.usersNo}">수정</button></td>
+	                <td><button class="btn btn-sm btn-danger delete-btn" data-id="${user.usersNo}">삭제</button></td>
+	              </tr>
+	            `;
+	            tbody.append(row);
+	          });
+	        }
+	      },
+	      error: function(xhr) {
+	        console.error("에러 발생", xhr);
+	      }
+	    });
+	    
+	  }
+	  
+	  // 유저 수정 모달 열기
+	  $(document).on('click', '.edit-btn', function() {
+
+	    const usersNo = $(this).data('id');
+
+	    $.ajax({
+
+	      type: "GET",
+	      url: `/api/admin/users/${usersNo}`,
+	      success: function(user) {
+	        $('#editUsersNo').val(user.usersNo);
+	        $('#editUsersId').val(user.usersId);
+	        $('#editUsersNm').val(user.usersNm);
+	        $('#editActiveYn').val(user.activeYn);
+	        $('#editModal').show();
+	      },
+	      error: function(xhr) {
+	        console.error("수정 모달 불러오기 실패", xhr);
+	      }
+	      
+	    });
+	    
+	  });
+
+	  // 유저 수정 저장
+	  $('#editForm').submit(function(e) {
+
+	    e.preventDefault();
+	
+	    const usersNo = $('#editUsersNo').val();  // 수정 필요
+	    const data = {
+	      usersNm: $('#editUsersNm').val(),
+	      activeYn: $('#editActiveYn').val()
+	    };
+	
+	    $.ajax({
+	      type: "PUT",
+	      url: `/api/admin/users/${usersNo}`,   // `${usersNo}`로 동적 설정
+	      contentType: "application/json",
+	      data: JSON.stringify(data),
+	      success: function() {
+	        alert('수정이 완료되었습니다.');
+	        $('#editModal').hide();
+	        loadUsers();
+	      },
+	      error: function(xhr) {
+	        console.error("수정 실패", xhr);
+	      }
+	    });
+	    
+	  });
+
+
+	  // 모달 닫기
+	  $('#closeEditModal').on('click', function() {
+	    $('#editModal').hide();
+	  });
+
+	  // 유저 삭제
+	  $(document).on('click', '.delete-btn', function() {
+
+	    const usersNo = $(this).data('id');
+
+	    if (confirm("정말로 삭제하시겠습니까?")) {
+	      $.ajax({
+
+	        type: "DELETE",
+	        url: `/api/admin/users/${usersNo}`,
+	        success: function() {
+	          alert('삭제가 완료되었습니다.');
+	          loadUsers();
+	        },
+	        error: function(xhr) {
+	          console.error("삭제 실패", xhr);
+	        }
+	        
+	      });
+	    }
+	    
+	  });
+	
+	  // 검색 버튼 클릭 시 조회
+	  $('#searchBtn').on('click', function() {
+	    loadUsers();
+	  });
+	  
+	  // 필터 초기화 버튼
+	  $('#resetBtn').on('click', function() {
+	    $('#activeYn').val('');
+	    $('#joinStartDt').val('');
+	    $('#joinEndDt').val('');
+	    $('#inactiveStartDt').val('');
+	    $('#inactiveEndDt').val('');
+	    $('#keyword').val('');
+	    loadUsers(); // 초기화 후 다시 로딩
+	  });
+		
+	  // 페이지 로딩 시 최초 데이터 로딩
+	  loadUsers();
+	  
+	});
+	
+</script>
 </div>
 
 </html>

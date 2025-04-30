@@ -18,6 +18,6 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
 	List<Object[]> countGroupedByScore();
 
 	@Query("SELECT AVG(s.scoreValue * 1.0) FROM Score s WHERE s.categoryId = :categoryId")
-	double avgScoreByCategory(@Param("categoryId") Long categoryId);
+	Double avgScoreByCategory(@Param("categoryId") Long categoryId);
 	
 }
