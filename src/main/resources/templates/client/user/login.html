@@ -137,9 +137,10 @@
 	        contentType: "application/json",
 	        data: JSON.stringify({ usersId, passwd }),
 	        success: function (res) {
-	          alert(res.usersNm + "님 환영합니다!");
+              localStorage.setItem('userId', res.usersId);
+              alert(res.usersNm + "님 환영합니다!");
 	          location.href = "/recommend/chat";
-	        },
+            },
 	        error: function () {
 	          alert("로그인 실패! 아이디 또는 비밀번호를 확인해주세요.");
 	        }

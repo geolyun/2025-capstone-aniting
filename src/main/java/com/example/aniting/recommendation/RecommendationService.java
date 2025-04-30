@@ -1,10 +1,12 @@
 package com.example.aniting.recommendation;
 
+import com.example.aniting.dto.AnswerItemDTO;
 import com.example.aniting.dto.AnswerRequestDTO;
 import com.example.aniting.dto.RecommendationDTO;
 import com.example.aniting.dto.RecommendationResultDTO;
 import com.example.aniting.entity.*;
 import com.example.aniting.ai.OpenAiClient;
+import com.example.aniting.recommendation.RecommendationPrompt;
 import com.example.aniting.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,11 +28,31 @@ public class RecommendationService {
     private final PetRepository petRepository;
     private final CategoryRepository categoryRepository;
 
+    // 카테고리 점수 부여 기준 데이터가 비어있으면 DB에 데이터 삽입
+    private void initCategoryDataIfEmpty() {
+        if (categoryRepository.count() == 0) {
+            List<Category> categories = List.of(
+                    new Category(null, "activity", "활동성", "하루의 에너지 소비량 및 야외 활동 선호도"),
+                    new Category(null, "sociability", "사회성", "다른 사람/동물과의 교류 능력"),
+                    new Category(null, "care", "돌봄 의지", "돌봄 시간과 정성에 대한 의지"),
+                    new Category(null, "emotional_bond", "정서적 교감", "감정 공유와 유대감 선호도"),
+                    new Category(null, "environment", "환경 적합성", "생활 공간 조건 및 특성"),
+                    new Category(null, "routine", "일상 루틴", "일과 패턴의 안정성")
+            );
+            categoryRepository.saveAll(categories);
+        }
+    }
+
+    public List<String> generateQuestions() {
+        String prompt = RecommendationPrompt.buildQuestionPrompt();
+        String gptResponse = openAiClient.callGPTAPI(prompt);
+        return RecommendationPrompt.parseQuestionList(gptResponse);
+    }
+
     public RecommendationResultDTO getRecommendations(String userId, AnswerRequestDTO responses) {
-        String prompt = RecommendationPrompt.buildPrompt(responses.getAnswers());
+        String prompt = RecommendationPrompt.buildRecommendationPrompt(responses.getAnswers());
         String gptResponse = openAiClient.callGPTAPI(prompt);
         RecommendationResultDTO result = RecommendationPrompt.parseGptResponse(gptResponse);
-
 
         saveAllRecommendationData(userId, responses, result, prompt, gptResponse);
         return result;
@@ -56,12 +78,12 @@ public class RecommendationService {
         int order = 1;
         LocalDateTime now = LocalDateTime.now();
 
-        for (Map.Entry<String, String> entry : requestDto.getAnswers().entrySet()) {
+        for (AnswerItemDTO item : requestDto.getAnswers()) {
             RecommendResponse res = new RecommendResponse();
             res.setUsersId(usersId);
             res.setQuestionOrder(order++);
-            res.setQuestion(entry.getKey());
-            res.setAnswer(entry.getValue());
+            res.setQuestion(item.getQuestion());
+            res.setAnswer(item.getAnswer());
             res.setCreatedAt(now);
             responses.add(res);
         }
@@ -94,26 +116,17 @@ public class RecommendationService {
     private void saveRecommendedPets(List<RecommendationDTO> recommendations) {
         for (RecommendationDTO rec : recommendations) {
             String name = rec.getAnimal().trim();
-
-            boolean exists = petRepository.findByPetNm(name).isPresent();
-            if (!exists) {
+            if (petRepository.findByPetNm(name).isEmpty()) {
                 Pet pet = new Pet();
                 pet.setPetNm(name);
                 pet.setSpecies(rec.getSpecies());
                 pet.setBreed(rec.getBreed());
-
-                // 🟡 돌봄 난이도 & 특이 품종 처리
                 pet.setCareLevel(
                         List.of("낮음", "중간", "높음").contains(rec.getCareLevel()) ? rec.getCareLevel() : "중간"
                 );
 
                 String isSpecial = rec.getIsSpecial();
-                if (isSpecial != null) {
-                    isSpecial = isSpecial.equalsIgnoreCase("yes") || isSpecial.equalsIgnoreCase("y") ? "Y" : "N";
-                } else {
-                    isSpecial = "N";
-                }
-                pet.setIsSpecial(isSpecial);
+                pet.setIsSpecial((isSpecial != null && (isSpecial.equalsIgnoreCase("yes") || isSpecial.equalsIgnoreCase("y"))) ? "Y" : "N");
 
                 pet.setDescription(rec.getReason());
                 pet.setCategory(0L);
@@ -139,12 +152,9 @@ public class RecommendationService {
             aiReasonBuilder.append(rec.getRank())
                     .append("위: ").append(rec.getAnimal())
                     .append(" - ").append(rec.getReason());
-            if (i != 2) { // 마지막 추천이 아니면 구분자 추가
-                aiReasonBuilder.append(" / ");
-            }
+            if (i != 2) aiReasonBuilder.append(" / ");
         }
         history.setAiReason(aiReasonBuilder.toString());
-
         history.setCreatedAt(LocalDateTime.now());
 
         recommendHistoryRepository.save(history);
@@ -159,23 +169,8 @@ public class RecommendationService {
         recommendLogRepository.save(log);
     }
 
-    private void initCategoryDataIfEmpty() {
-        if (categoryRepository.count() == 0) {
-            List<Category> categories = List.of(
-                    new Category(null, "activity", "활동성", "하루의 에너지 소비량 및 야외 활동 선호도"),
-                    new Category(null, "sociability", "사회성", "다른 사람/동물과의 교류 능력"),
-                    new Category(null, "care", "돌봄 의지", "돌봄 시간과 정성에 대한 의지"),
-                    new Category(null, "emotional_bond", "정서적 교감", "감정 공유와 유대감 선호도"),
-                    new Category(null, "environment", "환경 적합성", "생활 공간 조건 및 특성"),
-                    new Category(null, "routine", "일상 루틴", "일과 패턴의 안정성")
-            );
-            categoryRepository.saveAll(categories);
-        }
-    }
-
     private Pet resolvePetByName(String name) {
         return petRepository.findByPetNm(name.trim())
                 .orElseThrow(() -> new IllegalArgumentException("❗ 해당 이름의 Pet을 찾을 수 없습니다: " + name));
     }
-
 }
