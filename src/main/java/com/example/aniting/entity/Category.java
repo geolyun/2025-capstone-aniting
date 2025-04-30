@@ -11,7 +11,6 @@ import lombok.*;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CATEGORY_ID")
     private Long categoryId; // 카테고리 고유 ID
 
