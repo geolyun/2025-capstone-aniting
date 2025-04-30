@@ -4,64 +4,141 @@
       layout:decorate="~{common/layout/adminLayout.html}">
 
 <div layout:fragment="content">
-    <main class="content">
-        <div class="container-fluid">
-            <h1 class="h3 mb-3">추천 응답 관리</h1>
+  <main class="content">
+    <div class="container-fluid">
+      <h2 class="mb-4">추천 응답 관리</h2>
 
-            <!-- 필터 영역 -->
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <input type="text" class="form-control" placeholder="사용자 ID 검색">
-                </div>
-                <div class="col-md-4">
-                    <input type="text" class="form-control" placeholder="질문 또는 응답 내용 검색">
-                </div>
-                <div class="col-md-2">
-                    <input type="date" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <input type="date" class="form-control">
-                </div>
-                <div class="col-md-1">
-                    <button class="btn btn-primary w-100">검색</button>
-                </div>
-            </div>
+      <!-- 필터 영역 -->
+      <div class="filters mb-4">
+        <div class="row g-2">
+          <div class="col-md-2">
+            <label class="form-label">사용자 ID</label>
+            <input type="text" id="usersIdFilter" class="form-control" placeholder="사용자 ID 검색">
+          </div>
 
-            <!-- 응답 테이블 -->
-            <div class="card">
-                <div class="card-body">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>사용자 ID</th>
-                                <th>질문 순서</th>
-                                <th>질문 내용</th>
-                                <th>응답 내용</th>
-                                <th>응답 시간</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>user123</td>
-                                <td>1</td>
-                                <td>집에 자주 계신가요?</td>
-                                <td>거의 매일 집에 있습니다.</td>
-                                <td>2025-04-04 18:20</td>
-                            </tr>
-                            <tr>
-                                <td>user456</td>
-                                <td>2</td>
-                                <td>혼자 있는 걸 좋아하시나요?</td>
-                                <td>아니요. 가족들과 함께 지내요.</td>
-                                <td>2025-04-04 18:25</td>
-                            </tr>
-                            <!-- 추가 더미 가능 -->
-                        </tbody>
-                    </table>
-                </div>
+          <div class="col-md-3">
+            <label class="form-label">질문 또는 응답 내용</label>
+            <input type="text" id="keywordFilter" class="form-control" placeholder="질문 또는 응답 키워드">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">응답일</label>
+            <div class="d-flex">
+              <input type="date" id="fromDate" class="form-control me-1">
+              <span class="align-self-center">~</span>
+              <input type="date" id="toDate" class="form-control ms-1">
             </div>
+          </div>
+
+          <div class="col-md-2 d-flex align-items-end">
+            <button id="searchBtn" class="btn btn-primary me-2 w-50">검색</button>
+            <button id="resetBtn" class="btn btn-secondary w-50">초기화</button>
+          </div>
         </div>
-    </main>
+      </div>
+
+      <!-- 응답 테이블 -->
+		<div class="card">
+		  <div class="card-body">
+		    <table class="table table-hover align-middle">
+		      <thead>
+		        <tr>
+		          <th>사용자 ID</th>
+		          <th>질문 순서</th>
+		          <th>질문 내용</th>
+		          <th>응답 내용</th>
+		          <th>응답 시각</th>
+		          <th>삭제</th>
+		        </tr>
+		      </thead>
+		      <tbody id="responseTableBody">
+		        <!-- JS에서 서버 응답 렌더링 -->
+		      </tbody>
+		    </table>
+		  </div>
+		</div>
+      
+    </div>
+  </main>
+</div>
+
+<div layout:fragment="script">
+  <script>
+  
+    $(document).ready(function () {
+
+      function loadResponses() {
+        const usersId = $("#usersIdFilter").val();
+        const keyword = $("#keywordFilter").val();
+        const from = $("#fromDate").val();
+        const to = $("#toDate").val();
+
+        $.get("/api/admin/responses", { usersId, keyword, from, to }, function (data) {
+
+          const tbody = $("#responseTableBody");
+          tbody.empty();
+
+          if (!data.length) {
+            tbody.append(`<tr><td colspan="6" class="text-center">데이터가 없습니다.</td></tr>`);
+          } 
+          else {
+            data.forEach(r => {
+              tbody.append(`
+                <tr>
+                  <td>${r.usersId}</td>
+                  <td>${r.questionOrder}</td>
+                  <td>${r.question}</td>
+                  <td>${r.answer}</td>
+                  <td>${r.createdAt.replace("T", " ").substring(0, 16)}</td>
+                  <td>
+                    <button class="btn btn-sm btn-danger deleteBtn" data-id="${r.responseId}">삭제</button>
+                  </td>
+                </tr>
+              `);
+            });
+          }
+          
+        });
+        
+      }
+
+      // 검색 버튼
+      $("#searchBtn").click(loadResponses);
+
+      // 초기화 버튼
+      $("#resetBtn").click(function () {
+        $("#usersIdFilter").val("");
+        $("#keywordFilter").val("");
+        $("#fromDate").val("");
+        $("#toDate").val("");
+        loadResponses();
+      });
+
+      // 삭제 버튼
+      $(document).on("click", ".deleteBtn", function () {
+
+        const id = $(this).data("id");
+        if (confirm("정말 삭제하시겠습니까?")) {
+          $.ajax({
+            url: `/api/admin/responses/${id}`,
+            type: "DELETE",
+            success: function () {
+              alert("삭제 완료");
+              loadResponses();
+            },
+            error: function () {
+              alert("삭제 실패");
+            }
+          });
+        }
+        
+      });
+
+      // 초기 로딩
+      loadResponses();
+    });
+    
+  </script>
 </div>
 
 </html>
