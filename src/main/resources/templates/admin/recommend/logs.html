@@ -48,38 +48,48 @@
               </tr>
             </thead>
             <tbody id="logTableBody">
-              <!-- JS에서 데이터 렌더링 -->
+              <!-- JS에서 렌더링 -->
             </tbody>
           </table>
         </div>
       </div>
+
+      <!-- 상세 모달 -->
+      <div id="detailModal" class="modal">
+        <h5>추천 로그 상세 보기</h5>
+        <form>
+          <div class="mb-3">
+            <pre id="detailPrompt" class="form-control" style="white-space:pre-wrap; height:200px; overflow:auto;"></pre>
+          </div>
+          <div class="mb-3">
+            <pre id="detailResponse" class="form-control" style="white-space:pre-wrap; height:300px; overflow:auto;"></pre>
+          </div>
+          <div class="text-end">
+            <button type="button" class="btn btn-secondary" id="closeDetailModal">닫기</button>
+          </div>
+        </form>
+      </div>
     </div>
-    
-	<!-- 상세 모달 (users.html 방식 적용) -->
-	<div id="detailModal" class="modal">
-	  <h5>추천 로그 상세 보기</h5>
-	  <form>
-	    <div class="mb-3">
-	      <label class="form-label">프롬프트</label>
-	      <textarea id="detailPrompt" class="form-control" rows="5" readonly></textarea>
-	    </div>
-	    <div class="mb-3">
-	      <label class="form-label">AI 응답</label>
-	      <textarea id="detailResponse" class="form-control" rows="5" readonly></textarea>
-	    </div>
-	    <div class="text-end">
-	      <button type="button" class="btn btn-secondary" id="closeDetailModal">닫기</button>
-	    </div>
-	  </form>
-	</div>
-	
   </main>
 </div>
-
 
 <!-- 스크립트 -->
 <div layout:fragment="script">
   <script>
+    // escape 없이 직접 함수 전달 방식 사용
+    function showDetail(prompt, response) {
+      $("#detailPrompt").text(prompt);
+
+      try {
+        const parsed = JSON.parse(response);
+        $("#detailResponse").text(JSON.stringify(parsed, null, 2));
+      } catch (e) {
+        $("#detailResponse").text(response);
+      }
+
+      $("#detailModal").show();
+    }
+
     $(document).ready(function () {
 
       function loadLogs() {
@@ -96,6 +106,10 @@
             tbody.append(`<tr><td colspan="5" class="text-center">데이터가 없습니다.</td></tr>`);
           } else {
             data.forEach(log => {
+              // JSON.stringify로 prompt, response를 안전하게 문자열화
+              const promptStr = JSON.stringify(log.aiPrompt).replace(/"/g, '&quot;');
+              const responseStr = JSON.stringify(log.aiResponse).replace(/"/g, '&quot;');
+
               tbody.append(`
                 <tr>
                   <td>${log.usersId}</td>
@@ -103,9 +117,8 @@
                   <td>${log.aiPrompt.length > 30 ? log.aiPrompt.substring(0, 30) + "..." : log.aiPrompt}</td>
                   <td>${log.aiResponse.length > 30 ? log.aiResponse.substring(0, 30) + "..." : log.aiResponse}</td>
                   <td>
-                    <button class="btn btn-sm btn-outline-primary viewDetailBtn"
-                      data-prompt="${log.aiPrompt.replace(/"/g, '&quot;')}"
-                      data-response="${log.aiResponse.replace(/"/g, '&quot;')}">보기</button>
+                    <button class="btn btn-sm btn-outline-primary"
+                      onclick='showDetail(${promptStr}, ${responseStr})'>보기</button>
                   </td>
                 </tr>
               `);
@@ -114,7 +127,7 @@
         });
       }
 
-      // 검색/초기화 버튼
+      // 버튼 이벤트
       $("#searchBtn").click(loadLogs);
       $("#resetBtn").click(function () {
         $("#usersIdFilter").val("");
@@ -124,19 +137,9 @@
         loadLogs();
       });
 
-      // 상세보기 모달 열기
-      $(document).on("click", ".viewDetailBtn", function () {
-        $("#detailPrompt").val($(this).data("prompt"));
-        $("#detailResponse").val($(this).data("response"));
-        $("#detailModal").show();
-      });
+      $("#closeDetailModal").click(() => $("#detailModal").hide());
 
-      // 모달 닫기
-      $("#closeDetailModal").click(function () {
-        $("#detailModal").hide();
-      });
-
-      // 초기 데이터 로딩
+      // 초기 데이터
       loadLogs();
     });
   </script>
