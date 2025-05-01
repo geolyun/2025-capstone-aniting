@@ -4,71 +4,142 @@
       layout:decorate="~{common/layout/adminLayout.html}">
 
 <div layout:fragment="content">
-    <main class="content">
-        <div class="container-fluid">
-            <h1 class="h3 mb-3">추천 결과 관리</h1>
+  <main class="content">
+    <div class="container-fluid">
+      <h2 class="mb-4">추천 결과 관리</h2>
 
-            <!-- 필터 영역 -->
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <input type="text" class="form-control" placeholder="사용자 ID 검색">
-                </div>
-                <div class="col-md-2">
-                    <input type="date" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <input type="date" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100">검색</button>
-                </div>
+      <!-- 필터 영역 -->
+      <div class="filters mb-4">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label">사용자 ID</label>
+            <input type="text" id="usersIdFilter" class="form-control" placeholder="사용자 ID 검색">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">생성일 범위</label>
+            <div class="d-flex">
+              <input type="date" id="fromDate" class="form-control me-1">
+              <span class="align-self-center">~</span>
+              <input type="date" id="toDate" class="form-control ms-1">
             </div>
-
-            <!-- 추천 결과 테이블 -->
-            <div class="card">
-                <div class="card-body">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>사용자 ID</th>
-                                <th>1순위</th>
-                                <th>2순위</th>
-                                <th>3순위</th>
-                                <th>추천 사유</th>
-                                <th>생성일</th>
-                                <th>상세보기</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>user123</td>
-                                <td>포메라니안</td>
-                                <td>말티즈</td>
-                                <td>치와와</td>
-                                <td>작고 귀여운 외모와 활발한 성격이 잘 어울립니다.</td>
-                                <td>2025-04-04 19:00</td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-info">보기</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>user456</td>
-                                <td>러시안블루</td>
-                                <td>브리티쉬 숏헤어</td>
-                                <td>샴</td>
-                                <td>조용하고 독립적인 성격으로 사용자 라이프스타일과 적합합니다.</td>
-                                <td>2025-04-04 19:05</td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-info">보기</button>
-                                </td>
-                            </tr>
-                            <!-- 더미 데이터 추가 가능 -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button id="searchBtn" class="btn btn-primary me-2 w-100">검색</button>
+            <button id="resetBtn" class="btn btn-secondary w-100">초기화</button>
+          </div>
         </div>
-    </main>
+      </div>
+
+      <!-- 추천 결과 테이블 -->
+      <div class="card">
+        <div class="card-body">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th>사용자 ID</th>
+                <th>1위</th>
+                <th>2위</th>
+                <th>3위</th>
+                <th>생성일</th>
+                <th>사유</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- JS에서 렌더링 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 추천 사유 모달 -->
+      <div id="detailModal" class="modal">
+        <h5>추천 사유 전체 보기</h5>
+        <form>
+          <div class="mb-3">
+            <pre id="detailReason" class="form-control" style="white-space:pre-wrap; height:300px; overflow:auto;"></pre>
+          </div>
+          <div class="text-end">
+            <button type="button" class="btn btn-secondary" id="closeDetailModal">닫기</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- JS 스크립트 -->
+<div layout:fragment="script">
+  <script>
+    let petMap = {}; // petId → petNm 맵
+
+    function loadPetMapAndHistory() {
+      $.get("/api/admin/pets/all", function (pets) {
+        pets.forEach(p => {
+          petMap[p.petId] = p.petNm;
+        });
+        loadHistory(); // petMap 준비 후 데이터 불러오기
+      });
+    }
+
+    function showReason(reason) {
+      $("#detailReason").text(reason);
+      $("#detailModal").show();
+    }
+
+    function loadHistory() {
+      const usersId = $("#usersIdFilter").val();
+      const from = $("#fromDate").val();
+      const to = $("#toDate").val();
+
+      $.get("/api/admin/history", { usersId, from, to }, function (data) {
+        const tbody = $("#historyTableBody");
+        tbody.empty();
+
+        if (!data.length) {
+          tbody.append(`<tr><td colspan="6" class="text-center">데이터가 없습니다.</td></tr>`);
+        } else {
+          data.forEach(item => {
+            const top1Name = petMap[item.top1PetId] || "-";
+            const top2Name = petMap[item.top2PetId] || "-";
+            const top3Name = petMap[item.top3PetId] || "-";
+
+            const shortReason = item.aiReason.length > 30
+              ? item.aiReason.substring(0, 30) + "..."
+              : item.aiReason;
+
+            tbody.append(`
+              <tr>
+                <td>${item.usersId}</td>
+                <td>${top1Name}</td>
+                <td>${top2Name}</td>
+                <td>${top3Name}</td>
+                <td class="text-center">${item.createdAt.replace("T", " ").substring(0, 16)}</td>
+                <td>
+                  ${shortReason}
+                  <button class="btn btn-sm btn-outline-primary ms-2"
+                          onclick='showReason(${JSON.stringify(item.aiReason)})'>보기</button>
+                </td>
+              </tr>
+            `);
+          });
+        }
+      });
+    }
+
+    $(document).ready(function () {
+      loadPetMapAndHistory();
+
+      $("#searchBtn").click(loadHistory);
+      $("#resetBtn").click(function () {
+        $("#usersIdFilter").val("");
+        $("#fromDate").val("");
+        $("#toDate").val("");
+        loadHistory();
+      });
+
+      $("#closeDetailModal").click(() => $("#detailModal").hide());
+    });
+  </script>
 </div>
 
 </html>
