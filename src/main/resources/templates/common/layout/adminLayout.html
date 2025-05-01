@@ -14,8 +14,23 @@
 
     <script src="/admin_assets/js/jquery-3.7.1.min.js"></script>
     <script src="/admin_assets/js/app.js"></script>
-    
-    <th:block layout:fragment="script"></th:block>
+    <script>
+	  $(document).ready(function () {
+
+	    $('#logoutBtn').click(function (e) {
+	      e.preventDefault();
+	      if (confirm("로그아웃 하시겠습니까?")) {
+	        $.post("/api/admin/logout", function (res) {
+	          if (res.success) {
+	            alert("로그아웃 되었습니다.");
+	            window.location.href = "/admin/login";
+	          }
+	        });
+	      }
+	    });
+	    
+	  });
+	</script>
     
     <style>
         /* 테이블 스타일 */
@@ -107,6 +122,8 @@
 </head>
 
 <body>
+
+<th:block layout:fragment="script"></th:block>
 
 <div class="wrapper">
     <nav id="sidebar" class="sidebar">
