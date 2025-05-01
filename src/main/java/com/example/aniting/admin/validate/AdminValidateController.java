@@ -48,4 +48,18 @@ public class AdminValidateController {
 		
 	}
 	
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(HttpServletRequest request) {
+		
+	    HttpSession session = request.getSession();
+	    if (session != null) {
+	        session.invalidate(); // 세션 무효화
+	    }
+	    return ResponseEntity.ok(Map.of(
+	        "success", true,
+	        "message", "로그아웃 완료"
+	    ));
+	    
+	}
+	
 }
