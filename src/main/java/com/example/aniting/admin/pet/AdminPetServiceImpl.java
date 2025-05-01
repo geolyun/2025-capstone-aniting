@@ -1,6 +1,8 @@
 package com.example.aniting.admin.pet;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +74,18 @@ public class AdminPetServiceImpl implements AdminPetService {
         }
         petRepository.deleteById(petId);
 	}
+	
+	@Override
+    public List<Map<String, Object>> findAllPets() {
+        return petRepository.findAll().stream()
+            .map(pet -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("petId", pet.getPetId());
+                map.put("petNm", pet.getPetNm());
+                return map;
+            })
+            .toList();
+    }
 	
 	private PetDTO toDTO(Pet pet) {
 		return new PetDTO(

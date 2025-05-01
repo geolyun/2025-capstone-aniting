@@ -45,4 +45,12 @@ public interface RecommendHistoryRepository extends JpaRepository<RecommendHisto
 		""")
 		List<Object[]> countRecommendationsByDayOfWeek();
 	
+	@Query("""
+			SELECT rh FROM RecommendHistory rh
+			LEFT JOIN FETCH rh.top1PetId
+			LEFT JOIN FETCH rh.top2PetId
+			LEFT JOIN FETCH rh.top3PetId
+			""")
+			List<RecommendHistory> findAllWithPets();
+
 }
