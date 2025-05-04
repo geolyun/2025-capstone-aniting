@@ -97,7 +97,7 @@
 		const recommendHtml = result.recommendations.map((rec, idx) => `
       <div class="mb-4">
         <h5 class="text-dark fw-bold mb-1">
-          <i class="fas fa-star text-warning me-2"></i>${rec.rank}위: ${rec.animal}
+          <i class="fas fa-star text-warning me-2"></i>${rec.rank}위: ${rec.animal} (${rec.species})
         </h5>
         <p class="text-secondary mb-2">${rec.reason}</p>
         <button class="btn btn-sm bg-gradient-info text-white mt-2" onclick="goToMap('${rec.animal}')">이 동물 주변 펫샵 보기</button>
