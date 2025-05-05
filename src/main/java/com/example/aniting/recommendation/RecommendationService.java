@@ -159,12 +159,12 @@ public class RecommendationService {
     private void initCategoryDataIfEmpty() {
         if (categoryRepository.count() == 0) {
             List<Category> categories = List.of(
-                    new Category(1L, "activity", "활동성", "하루의 에너지 소비량 및 야외 활동 선호도"),
-                    new Category(2L, "sociability", "사회성", "다른 사람/동물과의 교류 능력"),
-                    new Category(3L, "care", "돌봄 의지", "돌봄 시간과 정성에 대한 의지"),
-                    new Category(4L, "emotional_bond", "정서적 교감", "감정 공유와 유대감 선호도"),
-                    new Category(5L, "environment", "환경 적합성", "생활 공간 조건 및 특성"),
-                    new Category(6L, "routine", "일상 루틴", "일과 패턴의 안정성")
+                new Category("activity", "활동성", "하루의 에너지 소비량 및 야외 활동 선호도"),
+                new Category("sociability", "사회성", "다른 사람/동물과의 교류 능력"),
+                new Category("care", "돌봄 의지", "돌봄 시간과 정성에 대한 의지"),
+                new Category("emotional_bond", "정서적 교감", "감정 공유와 유대감 선호도"),
+                new Category("environment", "환경 적합성", "생활 공간 조건 및 특성"),
+                new Category("routine", "일상 루틴", "일과 패턴의 안정성")
             );
             categoryRepository.saveAll(categories);
         }

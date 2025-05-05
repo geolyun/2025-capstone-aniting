@@ -24,4 +24,12 @@ public class Category {
 
     @Column(name = "STANDARD_DESCRIPTION", nullable = false, length = 1000)
     private String standardDescription; // 점수 부여 기준에 관한 설명
+    
+    public Category(String categoryEng, String categoryKor, String description) {
+        this.category = categoryEng;
+        this.scoreStandard = categoryKor;
+        this.standardDescription = description;
+    }
+
+    
 }
