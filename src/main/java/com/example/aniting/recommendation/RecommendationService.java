@@ -10,6 +10,7 @@ import com.example.aniting.recommendation.RecommendationPrompt;
 import com.example.aniting.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -156,7 +157,8 @@ public class RecommendationService {
     }
 
     // 카테고리 점수 부여 기준 데이터가 비어있으면 DB에 데이터 삽입
-    private void initCategoryDataIfEmpty() {
+    @Transactional
+    synchronized void initCategoryDataIfEmpty() {
         if (categoryRepository.count() == 0) {
             List<Category> categories = List.of(
                 new Category("activity", "활동성", "하루의 에너지 소비량 및 야외 활동 선호도"),
