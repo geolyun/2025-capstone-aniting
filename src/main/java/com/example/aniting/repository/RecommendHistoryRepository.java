@@ -19,22 +19,22 @@ public interface RecommendHistoryRepository extends JpaRepository<RecommendHisto
 	
 	@Query(value = """
 		    SELECT COUNT(*) FROM (
-		        SELECT USERS_ID, COUNT(*) as CNT
-		        FROM RECOMMEND_HISTORY
-		        GROUP BY USERS_ID
-		        HAVING CNT >= :threshold
+		        SELECT users_id, COUNT(*) as cnt
+		        FROM recommend_history
+		        GROUP BY users_id
+		        HAVING cnt >= :threshold
 		    ) AS sub
 		""", nativeQuery = true)
 	int countAnomalyUsers(int threshold);
 	
 	@Query(value = """
-		    SELECT P.BREED AS breed, COUNT(*) AS count
-		    FROM RECOMMEND_HISTORY RH
-		    JOIN PET P ON RH.TOP1_PET_ID = P.PET_ID
-		    GROUP BY P.BREED
+		    SELECT p.breed AS breed, COUNT(*) AS count
+		    FROM recommend_history rh
+		    JOIN pet p ON rh.top1_pet_id = p.pet_id
+		    GROUP BY p.breed
 		    ORDER BY count DESC
 		    LIMIT 3
-		    """, nativeQuery = true)
+		""", nativeQuery = true)
 	List<Object[]> findTop3Pets();
 	
 	@Query("""
@@ -43,7 +43,7 @@ public interface RecommendHistoryRepository extends JpaRepository<RecommendHisto
 		    GROUP BY dayOfWeek
 		    ORDER BY dayOfWeek
 		""")
-		List<Object[]> countRecommendationsByDayOfWeek();
+	List<Object[]> countRecommendationsByDayOfWeek();
 	
 	@Query("""
 			SELECT rh FROM RecommendHistory rh
@@ -51,6 +51,6 @@ public interface RecommendHistoryRepository extends JpaRepository<RecommendHisto
 			LEFT JOIN FETCH rh.top2PetId
 			LEFT JOIN FETCH rh.top3PetId
 			""")
-			List<RecommendHistory> findAllWithPets();
+	List<RecommendHistory> findAllWithPets();
 
 }
