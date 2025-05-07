@@ -14,6 +14,7 @@ import com.example.aniting.dto.AnswerItemDTO;
 import com.example.aniting.dto.AnswerRequestDTO;
 import com.example.aniting.dto.RecommendationResultDTO;
 import com.example.aniting.entity.Users;
+import com.example.aniting.repository.RecommendLogRepository;
 import com.example.aniting.repository.UsersRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,14 +26,20 @@ import lombok.extern.slf4j.Slf4j;
 public class RecommendationDataScheduler {
 
 	private final RecommendationService recommendationService;
+	private final RecommendLogRepository recommendLogRepository;
     private final OpenAiClient openAiClient;
     private final UsersRepository usersRepository;
 
-   
-    //매일 오전 3시: GPT가 질문을 생성하고, 스스로 답변하여 추천 및 DB 저장까지 자동 실행
-    @Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public void autoGenerateRecommendationDataFromGPT() {
         try {
+        	
+        	long count = recommendLogRepository.countByUsersIdStartingWith("gpt_user_");
+            if (count >= 1000) {
+                log.info("[샘플 추천 종료] 이미 1000개의 샘플 데이터가 생성됨.");
+                return;
+            }
+        	
             String userId = "gpt_user_" + UUID.randomUUID().toString().substring(0, 8);
             registerSampleUser(userId); // ✨ 내부 전용 유저 생성
 

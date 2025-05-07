@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface RecommendLogRepository extends JpaRepository<RecommendLog, Long> {
 
 	void deleteByUsersId(String usersId);
+	long countByUsersIdStartingWith(String prefix);
 	
 }
