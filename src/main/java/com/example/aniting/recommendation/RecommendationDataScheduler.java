@@ -35,8 +35,8 @@
 //        try {
 //        	
 //        	long count = recommendLogRepository.countByUsersIdStartingWith("gpt_user_");
-//            if (count >= 1000) {
-//                log.info("[샘플 추천 종료] 이미 1000개의 샘플 데이터가 생성됨.");
+//            if (count >= 300) {
+//                log.info("[샘플 추천 종료] 이미 300개의 샘플 데이터가 생성됨.");
 //                return;
 //            }
 //        	
