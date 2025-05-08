@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout/adminLayout.html}">
+
+<div layout:fragment="content">
+  <main class="content">
+    <div class="container-fluid">
+      <h1 class="h3 mb-4">샘플 추천 데이터 생성</h1>
+
+      <div class="card">
+        <div class="card-body">
+          <p>아래 버튼을 클릭하면 GPT를 통해 샘플 추천 데이터를 생성합니다.</p>
+
+          <div class="d-flex flex-column gap-2" style="max-width: 150px;">
+			 <button class="btn btn-outline-primary" onclick="generateSample(1)">1개 생성</button>
+			 <button class="btn btn-outline-success" onclick="generateSample(10)">10개 생성</button>
+			 <button class="btn btn-outline-warning" onclick="generateSample(50)">50개 생성</button>
+			 <button class="btn btn-outline-danger" onclick="generateSample(100)">100개 생성</button>
+		  </div>
+		  <div id="status" class="mt-3 fw-bold alert alert-info d-none"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div layout:fragment="script">
+<script>
+
+	function generateSample(count) {
+
+	  if (confirm(`${count}개의 샘플 데이터를 생성하시겠습니까?`)) {
+
+	    $("#status").removeClass().addClass("mt-3 fw-bold alert alert-info").text("샘플 데이터를 생성 중입니다... 잠시만 기다려주세요.").removeClass("d-none");
+	    $("button").prop("disabled", true);
+
+	    $.post("/api/admin/sample/generate?count=" + count, function (res) {
+	      $("#status").removeClass().addClass("mt-3 fw-bold alert alert-success").text(res).removeClass("d-none");
+	      alert(res);
+	    }).fail(function () {
+	      $("#status").removeClass().addClass("mt-3 fw-bold alert alert-danger").text("샘플 생성 중 오류가 발생했습니다.").removeClass("d-none");
+	      alert("샘플 생성 중 오류가 발생했습니다.");
+	    }).always(function () {
+	      $("button").prop("disabled", false);
+	    });
+
+	  }
+	  
+	}
+	
+</script>
+</div>
+
+</html>
