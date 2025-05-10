@@ -17,18 +17,23 @@ public class RecommendationPrompt {
     public static String buildQuestionPrompt() {
         return "당신은 반려동물 추천 전문가입니다. 사용자의 성향을 파악하기 위해 " +
                 "activity, sociability, care, emotional_bond, environment, routine " +
-                "6개 기준을 고루 다루는 질문을 9개에서 11개 내로 한글로 작성해주세요. " +
-                "각 질문은 짧고 명확해야 하며, 하나의 질문이 1개 또는 2개의 기준을 평가할 수 있도록 하세요. " +
-                "각 질문에는 반드시 해당 질문이 어떤 성향 기준들을 평가하는지 'categories' 배열로 포함해주세요. " +
-                "출력은 다음 JSON 형식의 배열로만 반환하세요. 다른 설명 없이 배열([])만 출력하세요:\n\n" +
+                "6개 기준을 고루 다루는 질문을 9개에서 11개 내로 작성해주세요.\n\n" +
+
+                "각 질문은 **서술형 또는 짧은 문장으로 답할 수 있는 형태**여야 합니다. 예/아니오로 대답하는 질문은 만들지 마세요.\n" +
+                "예를 들어 '밖에 자주 나가시나요?' 대신 '당신은 평소에 어떤 활동적인 취미를 즐기시나요?' 같은 식의 질문을 만들어야 합니다.\n\n" +
+
+                "각 질문은 JSON 객체로 구성되며, 'question'과 'categories' 필드를 포함해야 합니다. " +
+                "각 질문은 1~2개의 성향 기준(categories)을 평가하도록 하세요.\n\n" +
+
+                "아래 형식의 JSON 배열로만 출력하세요. 다른 설명은 출력하지 마세요:\n\n" +
                 "[\n" +
                 "  {\n" +
-                "    \"question\": \"밖에서 활동하는 걸 좋아하시면서도 정해진 시간에 식사를 챙기시나요?\",\n" +
-                "    \"categories\": [\"activity\", \"routine\"]\n" +
+                "    \"question\": \"혼자 있을 때는 주로 어떤 활동을 하며 시간을 보내시나요?\",\n" +
+                "    \"categories\": [\"activity\", \"emotional_bond\"]\n" +
                 "  },\n" +
                 "  {\n" +
-                "    \"question\": \"낯선 사람과 빠르게 친해지는 편이신가요?\",\n" +
-                "    \"categories\": [\"sociability\"]\n" +
+                "    \"question\": \"일상에서 어떤 루틴을 가장 중요하게 지키고 계신가요?\",\n" +
+                "    \"categories\": [\"routine\"]\n" +
                 "  }\n" +
                 "]";
     }
@@ -42,47 +47,46 @@ public class RecommendationPrompt {
             obj.put("answer", item.getAnswer());
             arr.put(obj);
         }
-        return "다음은 사용자의 질문과 답변입니다. 이를 참고하여 사용자의 성향 점수(activity, sociability, care, emotional_bond, environment, routine)를 1~5점으로 평가하고, " +
-                "가장 적합한 반려동물 3가지를 추천해 주세요.\n" +
 
-                "단, 추천 동물은 다음 조건을 반드시 고려하세요:\n" +
-                "1. 개와 고양이처럼 흔한 반려동물 외에도 **이국적이거나 특이한 동물**도 되도록이면 하나 이상 포함되도록 하세요.\n" +
-                "2. 희귀 품종 또는 특이한 성격의 종도 고려하세요.\n" +
-                "3. 사람들이 혐오감을 느끼거나 꺼려할 수 있는 동물이나 종(예: 파충류)은 배제해주세요.\n" +
-                "4. 단, 실제로 일반인이 실내에서 기를 수 있고, 인간과 정서적 교감을 나눌 수 있는 동물로 제한합니다.\n" +
-                "5. 각 추천 동물은 사용자의 성향 점수와 연결하여 구체적인 이유를 작성해주세요.\n\n" +
+        return "당신은 반려동물 추천 전문가입니다. 아래는 사용자의 질문과 그에 대한 응답입니다. 응답은 서술형 또는 짧은 문장입니다. 이를 참고하여 사용자의 성향 점수(activity, sociability, care, emotional_bond, environment, routine)를 1~5점으로 평가하세요.\n" +
 
-                "추가로, 추천 동물에 대해 내부적으로 다음과 같은 정보도 함께 구조화해서 포함하세요:\n" +
-                "- species: 동물의 종 (예: 포유류, 조류, 파충류 등)\n" +
-                "- breed: 품종 이름\n" +
+                "\n💡 점수화 가이드:\n" +
+                "- 응답이 적극적일수록 높은 점수 (4~5점), 소극적이거나 모호할수록 낮은 점수 (1~2점)\n" +
+                "- 가능한 점수는 2~3점 중심 분포를 권장합니다.\n" +
+                "- 1개의 질문은 1~2개 기준에 반영되므로, 카테고리별로 나누어 평균 점수를 도출하세요.\n\n" +
+
+                "점수 평가 후, 사용자의 성향에 맞는 반려동물 3가지를 추천해주세요. 아래 조건을 반드시 따르세요:\n" +
+                "1. 추천 동물은 일반적인 동물(예: 개, 고양이) 외에도 이국적이거나 특이한 동물이 하나 이상 포함되도록 하세요.\n" +
+                "2. 파충류 등 일반인이 혐오감을 느낄 수 있는 동물은 제외합니다.\n" +
+                "3. 사람과 정서적 교감이 가능하고 실내 사육이 가능한 동물로 한정합니다.\n\n" +
+
+                "각 추천 동물에 대해 다음 정보를 반드시 구조화해 주세요:\n" +
+                "- animal: **풀네임**, 예: \"네덜란드 드워프 토끼\"\n" +
+                "- species: **쉽게 정의할 수 있는 일반 동물명**, 예: \"토끼\"\n" +
+                "- breed: **그 동물의 세부 품종 이름**, 예: \"드워프 토끼\"\n" +
                 "- care_level: 돌봄 난이도 (낮음, 중간, 높음)\n" +
-                "- is_special: 특이 품종 여부 (\"Y\" 또는 \"N\")\n\n" +
+                "- is_special: 특이 품종 여부 (\"Y\" 또는 \"N\")\n" +
+                "- reason: 사용자 성향과 이 동물이 잘 맞는 이유\n\n" +
 
-                "동물의 종과 품종 이름, 추천해주는 반려동물의 이름은 반드시 한글로 결과를 출력해주세요.\n\n" +
-
-                "참고: 사용자 응답이 모호하거나 애매할 경우에는 점수를 높게 주지 마세요.(2점 이하로 부여)\n" +
-                "가능하면 점수는 2~3점 중심으로 분포되도록 설정해주세요.\n\n" +
-
-                "추천 동물마다 species, breed, care_level, is_special, reason을 반드시 포함하세요. " +
-                "출력은 반드시 다음 JSON 형식을 따르세요. 다른 텍스트는 포함하지 말고 JSON만 반환하세요:\n\n" +
+                "💡 예시 형식:\n" +
                 "{\n" +
                 "  \"user_scores\": {\n" +
-                "    \"activity\": 숫자,\n" +
-                "    \"sociability\": 숫자,\n" +
-                "    \"care\": 숫자,\n" +
-                "    \"emotional_bond\": 숫자,\n" +
-                "    \"environment\": 숫자,\n" +
-                "    \"routine\": 숫자\n" +
+                "    \"activity\": 3,\n" +
+                "    \"sociability\": 2,\n" +
+                "    \"care\": 4,\n" +
+                "    \"emotional_bond\": 3,\n" +
+                "    \"environment\": 3,\n" +
+                "    \"routine\": 2\n" +
                 "  },\n" +
                 "  \"recommendations\": [\n" +
                 "    {\n" +
                 "      \"rank\": 1,\n" +
-                "      \"animal\": \"동물 이름\",\n" +
-                "      \"species\": \"종\",\n" +
-                "      \"breed\": \"품종\",\n" +
+                "      \"animal\": \"네덜란드 드워프 토끼\",\n" +
+                "      \"species\": \"토끼\",\n" +
+                "      \"breed\": \"드워프 토끼\",\n" +
                 "      \"care_level\": \"중간\",\n" +
-                "      \"is_special\": \"Yes or NO\",\n" +
-                "      \"reason\": \"추천 이유\"\n" +
+                "      \"is_special\": \"Y\",\n" +
+                "      \"reason\": \"낮은 활동성과 규칙적인 루틴을 가진 사용자에게 적합합니다.\"\n" +
                 "    },\n" +
                 "    { ... },\n" +
                 "    { ... }\n" +
@@ -107,8 +111,7 @@ public class RecommendationPrompt {
                 categories.add(categoriesArray.getString(j));
             }
 
-            String questionWithCategory = question + " (" + String.join(", ", categories) + ")";
-            questions.add(questionWithCategory);
+            questions.add(question);
         }
 
         return questions;
