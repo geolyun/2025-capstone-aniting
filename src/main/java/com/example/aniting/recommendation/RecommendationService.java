@@ -159,7 +159,7 @@ public class RecommendationService {
     // 카테고리 점수 부여 기준 데이터가 비어있으면 DB에 데이터 삽입
     @Transactional
     synchronized void initCategoryDataIfEmpty() {
-        if (categoryRepository.count() == 0) {
+        if (!categoryRepository.existsById(1L)) {
             List<Category> categories = List.of(
                     new Category(1L, "activity", "활동성", "하루의 에너지 소비량 및 야외 활동 선호도"),
                     new Category(2L, "sociability", "사회성", "다른 사람/동물과의 교류 능력"),
