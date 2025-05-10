@@ -17,9 +17,20 @@ public class RecommendationPrompt {
     public static String buildQuestionPrompt() {
         return "당신은 반려동물 추천 전문가입니다. 사용자의 성향을 파악하기 위해 " +
                 "activity, sociability, care, emotional_bond, environment, routine " +
-                "6개 기준을 고루 다루는 질문을 9개에서 11개 내의 개수로 한글로 작성해주세요. " +
-                "각 질문은 짧고 명확해야 합니다. " +
-                "반드시 JSON 배열만 반환하세요. 다른 설명 없이 배열([])만 출력하세요.";
+                "6개 기준을 고루 다루는 질문을 9개에서 11개 내로 한글로 작성해주세요. " +
+                "각 질문은 짧고 명확해야 하며, 하나의 질문이 1개 또는 2개의 기준을 평가할 수 있도록 하세요. " +
+                "각 질문에는 반드시 해당 질문이 어떤 성향 기준들을 평가하는지 'categories' 배열로 포함해주세요. " +
+                "출력은 다음 JSON 형식의 배열로만 반환하세요. 다른 설명 없이 배열([])만 출력하세요:\n\n" +
+                "[\n" +
+                "  {\n" +
+                "    \"question\": \"밖에서 활동하는 걸 좋아하시면서도 정해진 시간에 식사를 챙기시나요?\",\n" +
+                "    \"categories\": [\"activity\", \"routine\"]\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"question\": \"낯선 사람과 빠르게 친해지는 편이신가요?\",\n" +
+                "    \"categories\": [\"sociability\"]\n" +
+                "  }\n" +
+                "]";
     }
 
     // 🔵 2. 추천 요청 프롬프트 (submit용)
@@ -85,9 +96,21 @@ public class RecommendationPrompt {
         String clean = extractJsonArrayOnly(gptResponse);
         JSONArray array = new JSONArray(clean);
         List<String> questions = new ArrayList<>();
+
         for (int i = 0; i < array.length(); i++) {
-            questions.add(array.getString(i));
+            JSONObject obj = array.getJSONObject(i);
+            String question = obj.getString("question");
+            JSONArray categoriesArray = obj.getJSONArray("categories");
+
+            List<String> categories = new ArrayList<>();
+            for (int j = 0; j < categoriesArray.length(); j++) {
+                categories.add(categoriesArray.getString(j));
+            }
+
+            String questionWithCategory = question + " (" + String.join(", ", categories) + ")";
+            questions.add(questionWithCategory);
         }
+
         return questions;
     }
 
