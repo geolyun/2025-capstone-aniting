@@ -1,6 +1,8 @@
 package com.example.aniting.recommendation;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +20,12 @@ public class RecommendationResponsePrompt {
     public static List<String> parseQuestionList(String jsonResponse) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.readValue(jsonResponse, new TypeReference<List<String>>() {});
+        	List<Map<String, Object>> rawList = mapper.readValue(jsonResponse, new TypeReference<>() {});
+            List<String> questions = new ArrayList<>();
+            for (Map<String, Object> item : rawList) {
+                questions.add((String) item.get("question"));
+            }
+            return questions;
         } catch (Exception e) {
             throw new RuntimeException("질문 리스트 파싱 실패: " + jsonResponse, e);
         }
