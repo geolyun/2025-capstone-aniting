@@ -33,8 +33,8 @@ public class AdminRecoResponseServiceImpl implements AdminRecoResponseService {
                         r.getUsersId(),
                         r.getQuestionOrder(),
                         r.getQuestion(),
-                        r.getAnswer(),
                         r.getCategory(),
+                        r.getAnswer(),
                         r.getCreatedAt()
                 ))
                 .toList();
