@@ -23,8 +23,8 @@ class RecommendationPromptTest {
     // 추천 프롬프트가 올바른 구조와 질문을 포함하는지 검증
     void buildRecommendationPrompt_containsQuestionsAndStructure() {
         List<AnswerItemDTO> list = List.of(
-                new AnswerItemDTO("당신의 하루 활동량은?", "낮음"),
-                new AnswerItemDTO("외출을 자주 하나요?", "보통")
+                new AnswerItemDTO("당신의 하루 활동량은?", "낮음", "activity"),
+                new AnswerItemDTO("외출을 자주 하나요?", "보통", "activity")
         );
 
         String prompt = RecommendationPrompt.buildRecommendationPrompt(list);
