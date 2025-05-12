@@ -17,23 +17,23 @@ public class RecommendationPrompt {
     public static String buildQuestionPrompt() {
         return "당신은 반려동물 추천 전문가입니다. 사용자의 성향을 파악하기 위해 " +
                 "activity, sociability, care, emotional_bond, environment, routine " +
-                "6개 기준을 고루 다루는 질문을 9개에서 11개 내로 작성해주세요.\n\n" +
+                "6개 기준을 고루 다루는 질문을 6가지 모든 기준들에 대해 충분히 판단 가능하다고 생각될 때까지 10개에서 20개 내로 작성해주세요.\n\n" +
 
                 "각 질문은 **서술형 또는 짧은 문장으로 답할 수 있는 형태**여야 합니다. 예/아니오로 대답하는 질문은 만들지 마세요.\n" +
                 "예를 들어 '밖에 자주 나가시나요?' 대신 '당신은 평소에 어떤 활동적인 취미를 즐기시나요?' 같은 식의 질문을 만들어야 합니다.\n\n" +
 
-                "각 질문은 JSON 객체로 구성되며, 'question'과 'categories' 필드를 포함해야 합니다. " +
-                "각 질문은 1~2개의 성향 기준(categories)을 평가하도록 하세요.\n\n" +
+                "각 질문은 JSON 객체로 구성되며, 'question'과 'category' 필드를 포함해야 합니다. " +
+                "각 질문은 오직 하나의 성향 기준(category)을 평가하도록 하세요.\n\n" +
 
                 "아래 형식의 JSON 배열로만 출력하세요. 다른 설명은 출력하지 마세요:\n\n" +
                 "[\n" +
                 "  {\n" +
                 "    \"question\": \"혼자 있을 때는 주로 어떤 활동을 하며 시간을 보내시나요?\",\n" +
-                "    \"categories\": [\"activity\", \"emotional_bond\"]\n" +
+                "    \"category\": \"activity\"\n" +
                 "  },\n" +
                 "  {\n" +
                 "    \"question\": \"일상에서 어떤 루틴을 가장 중요하게 지키고 계신가요?\",\n" +
-                "    \"categories\": [\"routine\"]\n" +
+                "    \"category\": \"routine\"\n" +
                 "  }\n" +
                 "]";
     }
@@ -104,17 +104,27 @@ public class RecommendationPrompt {
         for (int i = 0; i < array.length(); i++) {
             JSONObject obj = array.getJSONObject(i);
             String question = obj.getString("question");
-            JSONArray categoriesArray = obj.getJSONArray("categories");
-
-            List<String> categories = new ArrayList<>();
-            for (int j = 0; j < categoriesArray.length(); j++) {
-                categories.add(categoriesArray.getString(j));
-            }
 
             questions.add(question);
         }
 
         return questions;
+    }
+
+    public static List<AnswerItemDTO> parseQuestionItems(String gptResponse) {
+        String clean = extractJsonArrayOnly(gptResponse);
+        JSONArray array = new JSONArray(clean);
+        List<AnswerItemDTO> items = new ArrayList<>();
+
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject obj = array.getJSONObject(i);
+            AnswerItemDTO item = new AnswerItemDTO();
+            item.setQuestion(obj.getString("question"));
+            item.setCategory(obj.getString("category"));
+            items.add(item);
+        }
+
+        return items;
     }
 
     // 🔵 4. 추천 결과 파싱 (JSONObject 기반)

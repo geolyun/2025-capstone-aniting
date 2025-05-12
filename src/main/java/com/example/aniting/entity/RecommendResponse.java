@@ -26,6 +26,9 @@ public class RecommendResponse {
     @Column(name = "QUESTION", nullable = false, columnDefinition = "TEXT")
     private String question; // AI가 한 질문
 
+    @Column(name = "CATEGORY")
+    private String category;
+
     @Column(name = "ANSWER", nullable = false, columnDefinition = "TEXT")
     private String answer; // 사용자 응답
 

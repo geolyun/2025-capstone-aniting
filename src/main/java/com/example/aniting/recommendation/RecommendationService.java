@@ -30,10 +30,10 @@ public class RecommendationService {
     private final CategoryRepository categoryRepository;
 
 
-    public List<String> generateQuestions() {
+    public List<AnswerItemDTO> generateQuestionItems() {
         String prompt = RecommendationPrompt.buildQuestionPrompt();
         String gptResponse = openAiClient.callGPTAPI(prompt);
-        return RecommendationPrompt.parseQuestionList(gptResponse);
+        return RecommendationPrompt.parseQuestionItems(gptResponse); // category 포함해서 파싱
     }
 
     public RecommendationResultDTO getRecommendations(String userId, AnswerRequestDTO responses) {
@@ -70,6 +70,7 @@ public class RecommendationService {
             res.setUsersId(usersId);
             res.setQuestionOrder(order++);
             res.setQuestion(item.getQuestion());
+            res.setCategory(item.getCategory());
             res.setAnswer(item.getAnswer());
             res.setCreatedAt(now);
             responses.add(res);

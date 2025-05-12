@@ -65,7 +65,7 @@ class RecommendationServiceTest {
         String gptOutput = "[\"Q1\",\"Q2\"]";
         when(openAiClient.callGPTAPI(anyString())).thenReturn(gptOutput);
 
-        List<String> result = recommendationService.generateQuestions();
+        List<AnswerItemDTO> result = recommendationService.generateQuestionItems();
 
         assertEquals(2, result.size());
         assertTrue(result.contains("Q1"));
