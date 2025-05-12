@@ -57,13 +57,17 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 
             String questionPrompt = RecommendationPrompt.buildQuestionPrompt();
             String rawQuestions = openAiClient.callGPTAPI(questionPrompt);
-            List<String> questions = RecommendationResponsePrompt.parseQuestionList(rawQuestions);
+            List<AnswerItemDTO> questionItems = RecommendationPrompt.parseQuestionItems(rawQuestions); // 🔥 변경 포인트
 
             List<AnswerItemDTO> answerItems = new ArrayList<>();
-            for (String question : questions) {
+            for (AnswerItemDTO qItem : questionItems) {
+                String question = qItem.getQuestion();
+                String category = qItem.getCategory();
+
                 String answerPrompt = RecommendationResponsePrompt.buildAnswerPrompt(question);
                 String gptAnswer = openAiClient.callGPTAPI(answerPrompt);
-                answerItems.add(new AnswerItemDTO(question, gptAnswer));
+
+                answerItems.add(new AnswerItemDTO(question, gptAnswer, category));
             }
 
             AnswerRequestDTO request = new AnswerRequestDTO();
