@@ -68,8 +68,8 @@ public class AdminDashboardServiceImpl implements AdminDashboardSerivce {
         LocalDateTime monthAgo = LocalDateTime.now().minusDays(30);
         int thisMonth = recommendHistoryRepository.countByCreatedAtGreaterThanEqual(monthAgo);
         
-        long totalResponses = recommendResponseRepository.count();
-        double recommendRate = (totalResponses == 0) ? 0 : (double) totalRecommendations / totalResponses * 100;
+        long distinctResponders = recommendResponseRepository.countDistinctUsersId(); // 새 메서드 필요
+        double recommendRate = (distinctResponders == 0) ? 0 : (double) totalRecommendations / distinctResponders * 100;
 
         int anomalyUsers = recommendHistoryRepository.countAnomalyUsers(10);
 
