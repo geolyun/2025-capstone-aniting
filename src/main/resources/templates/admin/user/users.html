@@ -57,6 +57,11 @@
 			
 			  </div>
 			</div>
+			
+			<!-- 선택 삭제 버튼 -->
+	        <div class="mb-3 text-end">
+	          <button id="deleteSelectedBtn" class="btn btn-danger">선택 삭제</button>
+	        </div>
 	
 	        <!-- 유저 테이블 -->
 			<div class="card">
@@ -64,6 +69,7 @@
 			    <table class="table table-hover align-middle">
 			      <thead>
 			        <tr>
+			          <th><input type="checkbox" id="selectAll"></th>
 			          <th>회원번호</th>
 			          <th>아이디</th>
 			          <th>이름</th>
@@ -147,12 +153,13 @@
 	        tbody.empty();
 	
 	        if (response.length === 0) {
-	          tbody.append("<tr><td colspan='8' class='text-center'>조회된 데이터가 없습니다.</td></tr>");
+	          tbody.append("<tr><td colspan='9' class='text-center'>조회된 데이터가 없습니다.</td></tr>");
 	        } 
 	        else {
 	          response.forEach(function(user, index) {
 	            const row = `
 	              <tr>
+	            	<td><input type="checkbox" class="userCheckbox" value="${user.usersNo}"></td>
 	                <td>${user.usersNo}</td>
 	                <td>${user.usersId}</td>
 	                <td>${user.usersNm}</td>
@@ -173,6 +180,43 @@
 	    });
 	    
 	  }
+	  
+	  // 전체 선택
+	  $(document).on('change', '#selectAll', function() {
+	    $('.userCheckbox').prop('checked', this.checked);
+	  });
+	  
+	  // 선택 삭제
+	  $('#deleteSelectedBtn').on('click', function() {
+
+	    const selected = $('.userCheckbox:checked')
+	      .map(function() { return $(this).val(); })
+	      .get();
+
+	    if (selected.length === 0) {
+	      alert("삭제할 유저를 선택하세요.");
+	      return;
+	    }
+
+	    if (!confirm(`${selected.length}명의 유저를 삭제하시겠습니까?`)) return;
+
+	    $.ajax({
+
+	      type: "DELETE",
+	      url: "/api/admin/users",
+	      contentType: "application/json",
+	      data: JSON.stringify(selected),
+	      success: function() {
+	        alert("삭제가 완료되었습니다.");
+	        loadUsers();
+	      },
+	      error: function(xhr) {
+	        console.error("삭제 실패", xhr);
+	      }
+	      
+	    });
+	    
+	  });
 	  
 	  // 유저 수정 모달 열기
 	  $(document).on('click', '.edit-btn', function() {
