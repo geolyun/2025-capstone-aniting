@@ -55,8 +55,7 @@
     }
   </style>
 
-  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ad0f010d9f3f08b63e081001f8d26702&libraries=services,clusterer"></script>
-
+  <script type="text/javascript" th:src="|//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoMapKey}&libraries=clusterer|"></script>
 </head>
 
 <body class="g-sidenav-show bg-gray-100 virtual-reality">
@@ -115,136 +114,121 @@
 
   <!-- 지도 스크립트 -->
   <script>
-  let map, userLoc;
-  let markers = [];
-  let shownPlaces = new Set();
-  let activeInfoWindow = null;
-
-  const selectedAnimal = localStorage.getItem("selectedAnimal") || "반려동물";
-  document.getElementById("selected-animal-title").innerText = `"${selectedAnimal}" 관련 펫샵 찾기`;
-
-  const keywords = [
-    selectedAnimal + " 분양",
-    selectedAnimal + " 샵",
-    selectedAnimal + " 입양",
-    selectedAnimal + " 펫샵",
-    selectedAnimal + " 동물 병원"
-  ];
-
-  window.addEventListener("load", function () {
-    if (typeof kakao === "undefined" || !kakao.maps) {
-      alert("카카오맵 SDK가 로딩되지 않았습니다.");
-      return;
-    }
-
-    if (!navigator.geolocation) {
-      alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
-      fallbackToDefaultLocation();
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        userLoc = new kakao.maps.LatLng(lat, lng);
-        initializeMap(userLoc);
-      },
-      (error) => {
-        alert("위치 정보를 가져올 수 없습니다. 기본 위치(서울 시청)로 표시합니다.");
-        fallbackToDefaultLocation();
-      }
-    );
-  });
-
-  function fallbackToDefaultLocation() {
-    userLoc = new kakao.maps.LatLng(37.5665, 126.9780); // 서울 시청
-    initializeMap(userLoc);
-  }
-
-  function initializeMap(center) {
-    map = new kakao.maps.Map(document.getElementById("map"), {
-      center: center,
-      level: 4
-    });
-
-    new kakao.maps.Circle({
-      center: center,
-      radius: 100,
-      strokeWeight: 2,
-      strokeColor: '#4A90E2',
-      strokeOpacity: 0.8,
-      fillColor: '#4A90E2',
-      fillOpacity: 0.4,
-      map: map
-    });
-
-    const mapTypeControl = new kakao.maps.MapTypeControl();
-    map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-
-    const zoomControl = new kakao.maps.ZoomControl();
-    map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-
-    kakao.maps.event.addListener(map, 'idle', () => {
-      $('#searchHereBtn').fadeIn();
-      $('#locateMeBtn').fadeIn();
-    });
-
-    $('#searchHereBtn').on('click', () => {
-      searchInBounds(map.getBounds());
-    });
-
-    $('#locateMeBtn').on('click', () => {
-      map.panTo(userLoc);
-      $('#searchHereBtn').fadeOut();
-      $('#locateMeBtn').fadeOut();
-    });
-
-    searchInBounds(map.getBounds());
-  }
-
-  function searchInBounds(bounds) {
-    const ps = new kakao.maps.services.Places();
-    shownPlaces.clear();
-    markers.forEach(m => m.setMap(null));
-    markers = [];
-
-    keywords.forEach(keyword => {
-      ps.keywordSearch(keyword, (data, status) => {
-        if (status !== kakao.maps.services.Status.OK) return;
-
-        data.forEach(place => {
-          const pos = new kakao.maps.LatLng(place.y, place.x);
-          const key = place.id;
-
-          if (!bounds.contain(pos) || shownPlaces.has(key)) return;
-          shownPlaces.add(key);
-
-          const marker = new kakao.maps.Marker({ map, position: pos });
-          markers.push(marker);
-
-          const info = new kakao.maps.InfoWindow({
-            content: `
-              <div style="width: 250px; word-break: break-word; padding: 10px; font-size: 13px;">
-                <strong style="font-size: 14px;">${place.place_name}</strong><br/>
-                <span style="color: gray;">${place.category_name}</span><br/>
-                ${place.road_address_name || place.address_name}<br/>
-                <span style="color: gray;">Tel: ${place.phone || '정보 없음'}</span><br/>
-                <a href="${place.place_url}" target="_blank" style="display:block; margin-top: 6px; color: #3366cc;">카카오맵에서 보기</a>
-              </div>`
-          });
-
-          kakao.maps.event.addListener(marker, 'click', function () {
-            if (activeInfoWindow) activeInfoWindow.close();
-            info.open(map, marker);
-            activeInfoWindow = info;
-          });
-        });
-      }, { bounds });
-    });
-  }
-</script>
-  
+	  let map, userLoc;
+	  let markers = [];
+	  let shownPlaces = new Set();
+	  let activeInfoWindow = null;
+	
+	  const selectedAnimal = localStorage.getItem("selectedAnimal") || "반려동물";
+	  document.getElementById("selected-animal-title").innerText = `"${selectedAnimal}" 관련 펫샵 찾기`;
+	
+	  const keywords = [
+	    selectedAnimal + " 분양",
+	    selectedAnimal + " 샵",
+	    selectedAnimal + " 입양",
+	    selectedAnimal + " 펫샵",
+	    selectedAnimal + " 동물 병원"
+	  ];
+	
+	  // 페이지 로드 후 지도 초기화
+	  window.onload = function () {
+	    if (!window.kakao || !kakao.maps) {
+	      alert("카카오맵 SDK가 로딩되지 않았습니다.");
+	      return;
+	    }
+	
+	    if (!navigator.geolocation) {
+	      alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
+	      return;
+	    }
+	
+	    navigator.geolocation.getCurrentPosition(function (position) {
+	      const lat = position.coords.latitude;
+	      const lng = position.coords.longitude;
+	      userLoc = new kakao.maps.LatLng(lat, lng);
+	
+	      map = new kakao.maps.Map(document.getElementById("map"), {
+	        center: userLoc,
+	        level: 4
+	      });
+	
+	      new kakao.maps.Circle({
+	        center: userLoc,
+	        radius: 100,
+	        strokeWeight: 2,
+	        strokeColor: '#4A90E2',
+	        strokeOpacity: 0.8,
+	        fillColor: '#4A90E2',
+	        fillOpacity: 0.4,
+	        map: map
+	      });
+	
+	      const mapTypeControl = new kakao.maps.MapTypeControl();
+	      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+	
+	      const zoomControl = new kakao.maps.ZoomControl();
+	      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+	
+	      kakao.maps.event.addListener(map, 'idle', () => {
+	        $('#searchHereBtn').fadeIn();
+	        $('#locateMeBtn').fadeIn();
+	      });
+	
+	      $('#searchHereBtn').on('click', () => {
+	        searchInBounds(map.getBounds());
+	      });
+	
+	      $('#locateMeBtn').on('click', () => {
+	        map.panTo(userLoc);
+	        $('#searchHereBtn').fadeOut();
+	        $('#locateMeBtn').fadeOut();
+	      });
+	
+	      searchInBounds(map.getBounds());
+	    });
+	  };
+	
+	  function searchInBounds(bounds) {
+	    const ps = new kakao.maps.services.Places();
+	    shownPlaces.clear();
+	    markers.forEach(m => m.setMap(null));
+	    markers = [];
+	
+	    keywords.forEach(keyword => {
+	      ps.keywordSearch(keyword, (data, status) => {
+	        if (status !== kakao.maps.services.Status.OK) return;
+	
+	        data.forEach(place => {
+	          const pos = new kakao.maps.LatLng(place.y, place.x);
+	          const key = place.id;
+	
+	          if (!bounds.contain(pos) || shownPlaces.has(key)) return;
+	          shownPlaces.add(key);
+	
+	          const marker = new kakao.maps.Marker({ map, position: pos });
+	          markers.push(marker);
+	
+	          const info = new kakao.maps.InfoWindow({
+	            content: `
+	              <div style="width: 250px; word-break: break-word; padding: 10px; font-size: 13px;">
+	                <strong style="font-size: 14px;">${place.place_name}</strong><br/>
+	                <span style="color: gray;">${place.category_name}</span><br/>
+	                ${place.road_address_name || place.address_name}<br/>
+	                <span style="color: gray;">Tel: ${place.phone || '정보 없음'}</span><br/>
+	                <a href="${place.place_url}" target="_blank" style="display:block; margin-top: 6px; color: #3366cc;">카카오맵에서 보기</a>
+	              </div>`
+	          });
+	
+	          kakao.maps.event.addListener(marker, 'click', function () {
+	            if (activeInfoWindow) activeInfoWindow.close();
+	            info.open(map, marker);
+	            activeInfoWindow = info;
+	          });
+	        });
+	      }, { bounds });
+	    });
+	  }
+	</script>
 
   <script src="../soft_assets/js/core/popper.min.js"></script>
   <script src="../soft_assets/js/core/bootstrap.min.js"></script>
