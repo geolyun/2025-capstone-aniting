@@ -10,6 +10,7 @@ public interface AdminUserService {
 			String inactiveEndDt, String keyword);
 	public void updateUser(Long usersNo, UsersDTO dto);
 	public void deleteUser(Long usersNo);
+	public void deleteUsers(List<Long> usersNos);
 	public UsersDTO getUser(Long usersNo);
 
 }

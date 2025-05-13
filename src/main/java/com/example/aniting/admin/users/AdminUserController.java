@@ -50,5 +50,10 @@ public class AdminUserController {
     public void deleteUser(@PathVariable Long usersNo) {
         adminUserService.deleteUser(usersNo);
     }
+    
+    @DeleteMapping
+    public void deleteUsers(@RequestBody List<Long> usersNos) {
+        adminUserService.deleteUsers(usersNos);
+    }
 	
 }
