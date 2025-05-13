@@ -46,6 +46,11 @@ public class AdminPetController {
         adminPetService.deletePet(petId);
     }
     
+    @DeleteMapping("/batch")
+    public void deletePets(@RequestBody List<Long> petIds) {
+        adminPetService.deletePets(petIds);
+    }
+    
     @GetMapping("/all")
     public List<Map<String, Object>> getAllPets() {
         return adminPetService.findAllPets();

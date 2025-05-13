@@ -76,6 +76,13 @@ public class AdminPetServiceImpl implements AdminPetService {
 	}
 	
 	@Override
+	public void deletePets(List<Long> petIds) {
+	    for (Long petId : petIds) {
+	        deletePet(petId);
+	    }
+	}
+	
+	@Override
     public List<Map<String, Object>> findAllPets() {
         return petRepository.findAll().stream()
             .map(pet -> {
