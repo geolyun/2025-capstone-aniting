@@ -47,6 +47,11 @@
 				    <button id="resetBtn" class="btn btn-secondary w-100">초기화</button>
 				</div>
             </div>
+            
+            <!-- 선택 삭제 -->
+            <div class="mb-3 text-end">
+            	<button id="deleteSelectedPetsBtn" class="btn btn-danger mb-3">선택 삭제</button>
+			</div>
 
             <!-- 반려동물 테이블 -->
             <div class="card">
@@ -54,6 +59,7 @@
                     <table class="table table-hover align-middle">
                         <thead>
                             <tr>
+                            	<th><input type="checkbox" id="selectAllPets" /></th>
                                 <th>종</th>
                                 <th>품종</th>
                                 <th>성격 태그</th>
@@ -187,6 +193,38 @@
           })
           .catch(error => console.error('Error updating pet:', error));
       });
+      
+      document.getElementById('deleteSelectedPetsBtn').addEventListener('click', function () {
+    	  const checked = document.querySelectorAll('.petCheckbox:checked');
+    	  if (checked.length === 0) {
+    	    alert("삭제할 항목을 선택하세요.");
+    	    return;
+    	  }
+
+    	  if (!confirm(`${checked.length}개의 반려동물을 삭제하시겠습니까?`)) return;
+
+    	  const ids = Array.from(checked).map(cb => cb.value);
+    	  fetch('/api/admin/pets/batch', {
+    	      method: 'DELETE',
+    	      headers: { 'Content-Type': 'application/json' },
+    	      body: JSON.stringify(ids)
+    	    }).then(response => {
+    	    if (response.ok) {
+    	      alert('삭제 완료');
+    	      loadPets();
+    	    } 
+    	    else {
+    	      alert('삭제 실패');
+    	    }
+    	 });
+      });
+      
+   	  // 전체 선택 기능 추가
+      document.getElementById('selectAllPets').addEventListener('change', function () {
+        const checked = this.checked;
+        document.querySelectorAll('.petCheckbox').forEach(cb => cb.checked = checked);
+      });
+
     });
 
     function loadPets() {
@@ -219,6 +257,7 @@
         const tr = document.createElement('tr');
 
         tr.innerHTML = `
+          <td><input type="checkbox" class="petCheckbox" value="${pet.petId}" /></td>
           <td>${pet.species || '-'}</td>
           <td>${pet.breed || '-'}</td>
           <td>${pet.personalityTags || '-'}</td>

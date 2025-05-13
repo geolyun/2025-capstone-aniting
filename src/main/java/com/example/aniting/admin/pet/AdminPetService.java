@@ -11,6 +11,7 @@ public interface AdminPetService {
 	public PetDTO getPetById(Long petId);
 	public PetDTO updatePet(Long petId, PetDTO petDTO);
 	public void deletePet(Long petId);
+	public void deletePets(List<Long> petIds);
 	public List<Map<String, Object>> findAllPets();
 
 }
