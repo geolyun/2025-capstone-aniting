@@ -51,7 +51,7 @@ public class AdminUserController {
         adminUserService.deleteUser(usersNo);
     }
     
-    @DeleteMapping("/batch")
+    @DeleteMapping
     public void deleteUsers(@RequestBody List<Long> usersNos) {
         adminUserService.deleteUsers(usersNos);
     }
