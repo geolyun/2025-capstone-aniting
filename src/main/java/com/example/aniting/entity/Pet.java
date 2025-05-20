@@ -37,6 +37,9 @@ public class Pet {
     @Column(name = "CATEGORY_IDS", length = 50)
     private String categoryIds;
 
+    @Column(name = "TRAIT_SCORES", length = 100)
+    private String traitScores;
+
     @Column(name = "DESCRIPTION", columnDefinition = "TEXT")
     private String description; // 설명 텍스트
 }

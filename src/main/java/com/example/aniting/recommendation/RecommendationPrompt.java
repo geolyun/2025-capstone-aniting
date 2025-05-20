@@ -66,6 +66,7 @@ public class RecommendationPrompt {
                 "- breed: **그 동물의 세부 품종 이름**, 예: \"드워프 토끼\"\n" +
                 "- care_level: 돌봄 난이도 (낮음, 중간, 높음)\n" +
                 "- is_special: 특이 품종 여부 (\"Y\" 또는 \"N\")\n" +
+                "- trait_scores: 이 동물의 6가지 성향 점수를 콤마(,)로 구분된 문자열로 제공해주세요. 순서는 activity, sociability, care, emotional_bond, environment, routine입니다. 예: \"3,2,4,5,2,3\"\n" +
                 "- reason: 사용자 성향과 이 동물이 잘 맞는 이유\n\n" +
 
                 "💡 예시 형식:\n" +
@@ -86,6 +87,7 @@ public class RecommendationPrompt {
                 "      \"breed\": \"드워프 토끼\",\n" +
                 "      \"care_level\": \"중간\",\n" +
                 "      \"is_special\": \"Y\",\n" +
+                "      \"trait_scores\": \"2,2,4,3,4,3\",\n" +
                 "      \"reason\": \"낮은 활동성과 규칙적인 루틴을 가진 사용자에게 적합합니다.\"\n" +
                 "    },\n" +
                 "    { ... },\n" +
@@ -155,6 +157,7 @@ public class RecommendationPrompt {
             r.setBreed(rec.optString("breed", ""));
             r.setCareLevel(rec.optString("care_level", "중간"));
             r.setIsSpecial(rec.optString("is_special", "N"));
+            r.setTraitScores(rec.optString("trait_scores", ""));
             recs.add(r);
         }
         dto.setRecommendations(recs);

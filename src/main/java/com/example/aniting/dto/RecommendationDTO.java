@@ -9,6 +9,7 @@ public class RecommendationDTO {
     private String species;
     private String breed;
     private String careLevel;
+    private String traitScores;
     private String isSpecial;
     private String reason;
 }

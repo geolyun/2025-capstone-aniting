@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, Long> {
 
+	List<Score> findByUsersId(String usersId);
+
 	void deleteByUsersId(String usersId);
 	
 	@Query("SELECT s.scoreValue, COUNT(s) FROM Score s GROUP BY s.scoreValue ORDER BY s.scoreValue")
