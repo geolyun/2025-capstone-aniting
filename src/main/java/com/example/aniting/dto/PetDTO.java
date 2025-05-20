@@ -25,5 +25,7 @@ public class PetDTO {
 
     private String categoryIds;
 
+    private String traitScores;
+
     private String description;
 }

@@ -97,6 +97,7 @@ public class AdminPetServiceImpl implements AdminPetService {
 			pet.getCareLevel(),
 			pet.getIsSpecial(),
 			pet.getCategoryIds(),
+			pet.getTraitScores(),
 			pet.getDescription()
 		);
 	}

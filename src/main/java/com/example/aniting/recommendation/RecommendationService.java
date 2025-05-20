@@ -119,6 +119,7 @@ public class RecommendationService {
                 pet.setDescription(rec.getReason());
                 pet.setCategoryIds("1,2,3,4,5,6");
                 pet.setPersonalityTags(null);
+                pet.setTraitScores(rec.getTraitScores());
 
                 petRepository.save(pet);
             }
