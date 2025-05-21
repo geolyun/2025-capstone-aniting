@@ -65,6 +65,7 @@
                                 <th>성격 태그</th>
                                 <th>관리 난이도</th>
                                 <th>특수동물</th>
+                                <th>성향 점수</th>
                                 <th>설명</th>
                                 <th>수정</th>
                                 <th>삭제</th>
@@ -122,6 +123,11 @@
 		        <label for="editCategoryIds" class="form-label">카테고리 번호</label>
 		        <input type="text" id="editCategoryIds" class="form-control" placeholder="예: 1, 2, 3" />
 		      </div>
+		      
+		      <div class="mb-3">
+			    <label for="editTraitScores" class="form-label">성향 점수</label>
+			    <input type="text" id="editTraitScores" class="form-control" placeholder="예: 3,4,3,5,3,4" />
+			  </div>
 		
 		      <div class="mb-3">
 		        <label for="editDescription" class="form-label">설명</label>
@@ -173,7 +179,8 @@
           personalityTags: document.getElementById('editPersonalityTags').value,
           careLevel: document.getElementById('editCareLevel').value,
           isSpecial: document.getElementById('editIsSpecial').value,
-          categoryIds: document.getElementById('editCategoryIds').value, // ✅ 추가
+          categoryIds: document.getElementById('editCategoryIds').value,
+          traitScores: document.getElementById('editTraitScores').value,
           description: document.getElementById('editDescription').value
         };
 
@@ -263,6 +270,7 @@
           <td>${pet.personalityTags || '-'}</td>
           <td>${pet.careLevel || '-'}</td>
           <td>${pet.isSpecial === 'Y' ? '예' : '아니오'}</td>
+          <td>${pet.traitScores || '-'}</td>
           <td>${pet.description || '-'}</td>
           <td class="text-center">
             <button class="btn btn-sm btn-warning" onclick="openEditModal(${pet.petId})">수정</button>
@@ -287,7 +295,8 @@
           document.getElementById('editPersonalityTags').value = pet.personalityTags || '';
           document.getElementById('editCareLevel').value = pet.careLevel || '';
           document.getElementById('editIsSpecial').value = pet.isSpecial || 'N';
-          document.getElementById('editCategoryIds').value = pet.categoryIds || ''; // ✅ 추가
+          document.getElementById('editCategoryIds').value = pet.categoryIds || '';
+          document.getElementById('editTraitScores').value = pet.traitScores || '';
           document.getElementById('editDescription').value = pet.description || '';
           document.getElementById('editModal').style.display = 'block';
         })

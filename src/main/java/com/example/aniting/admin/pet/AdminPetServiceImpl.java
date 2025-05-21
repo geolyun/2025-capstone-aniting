@@ -61,6 +61,7 @@ public class AdminPetServiceImpl implements AdminPetService {
 		pet.setCareLevel(petDTO.getCareLevel());
 		pet.setIsSpecial(petDTO.getIsSpecial());
 		pet.setCategoryIds(petDTO.getCategoryIds());
+		pet.setTraitScores(petDTO.getTraitScores());
 		pet.setDescription(petDTO.getDescription());
 
 		Pet updatedPet = petRepository.save(pet);
