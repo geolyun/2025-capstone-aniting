@@ -94,6 +94,9 @@ public class RecommendationPrompt {
                 "    { ... }\n" +
                 "  ]\n" +
                 "}\n\n" +
+
+                "네덜란드 드워프 토끼는 구조화를 위한 예시일 뿐 추천하는 데에는 영향을 주지 마세요." +
+
                 arr.toString();
     }
 
