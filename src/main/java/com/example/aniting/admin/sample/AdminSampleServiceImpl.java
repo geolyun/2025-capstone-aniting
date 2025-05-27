@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import com.example.aniting.petseed.PetSeedService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.example.aniting.ai.OpenAiClient;
@@ -38,6 +40,12 @@ public class AdminSampleServiceImpl implements AdminSampleService {
     
 	@Autowired
     private UsersRepository usersRepository;
+	
+	@Async
+	public CompletableFuture<Boolean> generateOneSampleAsync() {
+		boolean result = generateOneSample();
+        return CompletableFuture.completedFuture(result);
+	}
 	
 	@Override
     public String generateMultipleSamples(int count) {
