@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Semaphore;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -37,10 +38,24 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 	@Autowired
     private UsersRepository usersRepository;
 	
+	private static final Semaphore semaphore = new Semaphore(5);
+	
 	@Async
 	public CompletableFuture<Boolean> generateOneSampleAsync() {
-		boolean result = generateOneSample();
-        return CompletableFuture.completedFuture(result);
+		try {
+			
+            semaphore.acquire(); // 동시 요청 제한
+            boolean result = callWithRetryAndDelay();
+            return CompletableFuture.completedFuture(result);
+            
+        } catch (Exception e) {
+        	
+            log.error("비동기 샘플 생성 중 예외 발생", e);
+            return CompletableFuture.completedFuture(false);
+            
+        } finally {
+            semaphore.release();
+        }
 	}
 	
 	@Override
@@ -114,6 +129,37 @@ public class AdminSampleServiceImpl implements AdminSampleService {
         usersRepository.save(user);
 
         log.info("➕ 샘플 유저 등록 완료: {}", userId);
+        
+    }
+	
+	private boolean callWithRetryAndDelay() {
+		
+        int retry = 0;
+        while (retry < 3) {
+            try {
+                boolean result = generateOneSample();
+                Thread.sleep(500);
+                
+                return result;
+                
+            } catch (RuntimeException e) {
+                if (e.getMessage().contains("429")) {
+                    retry++;
+                    log.warn("GPT 429 오류 발생, {}초 후 재시도 (시도: {})", (retry + 1), retry);
+                    try {
+                        Thread.sleep(1000L * (retry + 1));
+                    } catch (InterruptedException ignored) {}
+                } 
+                else {
+                    throw e; // 429 외 오류는 즉시 터뜨림
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("스레드 인터럽트됨", e);
+            }
+        }
+
+        throw new RuntimeException("GPT 요청 실패: 429 재시도 초과");
         
     }
 	
