@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Semaphore;
 
-import com.example.aniting.petseed.PetSeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -35,37 +33,18 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 	
 	@Autowired
     private OpenAiClient openAiClient;
-
-    @Autowired
-    private PetSeedService petSeedService;
     
 	@Autowired
     private UsersRepository usersRepository;
 	
-	private static final Semaphore semaphore = new Semaphore(5);
-	
 	@Async
 	public CompletableFuture<Boolean> generateOneSampleAsync() {
-		try {
-			
-            semaphore.acquire(); // 동시 요청 제한
-            boolean result = callWithRetryAndDelay();
-            return CompletableFuture.completedFuture(result);
-            
-        } catch (Exception e) {
-        	
-            log.error("비동기 샘플 생성 중 예외 발생", e);
-            return CompletableFuture.completedFuture(false);
-            
-        } finally {
-            semaphore.release();
-        }
+		boolean result = generateOneSample();
+        return CompletableFuture.completedFuture(result);
 	}
 	
 	@Override
     public String generateMultipleSamples(int count) {
-
-        petSeedService.generateAndSavePets();
 		
         int success = 0;
 
@@ -79,15 +58,14 @@ public class AdminSampleServiceImpl implements AdminSampleService {
     }
 	
 	private boolean generateOneSample() {
+		
         try {
-            petSeedService.generateAndSavePets();
-
             String userId = "gpt_user_" + UUID.randomUUID().toString().substring(0, 8);
             registerSampleUser(userId);
 
             String questionPrompt = RecommendationPrompt.buildQuestionPrompt();
             String rawQuestions = openAiClient.callGPTAPI(questionPrompt);
-            List<AnswerItemDTO> questionItems = RecommendationPrompt.parseQuestionItems(rawQuestions);
+            List<AnswerItemDTO> questionItems = RecommendationPrompt.parseQuestionItems(rawQuestions); // 🔥 변경 포인트
 
             List<AnswerItemDTO> answerItems = new ArrayList<>();
             for (AnswerItemDTO qItem : questionItems) {
@@ -102,7 +80,6 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 
             AnswerRequestDTO request = new AnswerRequestDTO();
             request.setAnswers(answerItems);
-
             RecommendationResultDTO result = recommendationService.getRecommendations(userId, request);
 
             String top1 = result.getRecommendations().stream()
@@ -139,42 +116,5 @@ public class AdminSampleServiceImpl implements AdminSampleService {
         log.info("➕ 샘플 유저 등록 완료: {}", userId);
         
     }
-	
-	private boolean callWithRetryAndDelay() {
-		
-        int retry = 0;
-        while (retry < 3) {
-            try {
-                boolean result = generateOneSample();
-                Thread.sleep(500);
-                
-                return result;
-                
-            } catch (RuntimeException e) {
-                if (e.getMessage().contains("429")) {
-                    retry++;
-                    log.warn("GPT 429 오류 발생, {}초 후 재시도 (시도: {})", (retry + 1), retry);
-                    try {
-                        Thread.sleep(1000L * (retry + 1));
-                    } catch (InterruptedException ignored) {}
-                } 
-                else {
-                    throw e; // 429 외 오류는 즉시 터뜨림
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("스레드 인터럽트됨", e);
-            }
-        }
-
-        throw new RuntimeException("GPT 요청 실패: 429 재시도 초과");
-        
-    }
-
-	@Override
-	public CompletableFuture<Boolean> generateOnePetAsync() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }
