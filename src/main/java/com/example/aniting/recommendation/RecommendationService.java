@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +35,7 @@ public class RecommendationService {
     }
 
     public RecommendationResultDTO getRecommendations(String userId, AnswerRequestDTO responses) {
-        String prompt = RecommendationPrompt.buildRecommendationPrompt(responses.getAnswers());
-        String gptResponse = openAiClient.callGPTAPI(prompt);
+        String prompt = generateRecommendationPrompt(responses.getAnswers());        String gptResponse = openAiClient.callGPTAPI(prompt);
         RecommendationResultDTO result = RecommendationPrompt.parseGptResponse(gptResponse);
 
         saveAllRecommendationData(userId, responses, result, prompt, gptResponse);
@@ -172,6 +169,34 @@ public class RecommendationService {
             );
             categoryRepository.saveAll(categories);
         }
+    }
+
+    public String generateRecommendationPrompt(List<AnswerItemDTO> answers) {
+        // 1. 이미 저장된 반려동물 이름 리스트 (중복 방지용)
+        List<String> previousPetNames = petRepository.findAllPetNames();
+
+        // 2. 중복은 아니지만 종/품종이 유사한 반려동물 리스트 수집
+        Set<Pet> similarPets = new HashSet<>();
+        for (String petNm : previousPetNames) {
+            petRepository.findByPetNm(petNm).ifPresent(originalPet -> {
+                List<Pet> similarList = petRepository.findBySpeciesOrBreed(
+                        originalPet.getSpecies(), originalPet.getBreed()
+                );
+                for (Pet candidate : similarList) {
+                    // 이름이 동일하면 제외 (중복 방지)
+                    if (!previousPetNames.contains(candidate.getPetNm())) {
+                        similarPets.add(candidate);
+                    }
+                }
+            });
+        }
+
+        // 3. 프롬프트 생성 (중복 제외 + 유사 성향 정보 포함)
+        return RecommendationPrompt.buildRecommendationPrompt(
+                answers,
+                previousPetNames,
+                new ArrayList<>(similarPets)
+        );
     }
 
     private Pet resolvePetByName(String name) {
