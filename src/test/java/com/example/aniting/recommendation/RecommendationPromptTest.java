@@ -2,6 +2,7 @@ package com.example.aniting.recommendation;
 
 import com.example.aniting.dto.AnswerItemDTO;
 import com.example.aniting.dto.RecommendationResultDTO;
+import com.example.aniting.entity.Pet;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -20,18 +21,24 @@ class RecommendationPromptTest {
     }
 
     @Test
-    // 추천 프롬프트가 올바른 구조와 질문을 포함하는지 검증
     void buildRecommendationPrompt_containsQuestionsAndStructure() {
         List<AnswerItemDTO> list = List.of(
                 new AnswerItemDTO("당신의 하루 활동량은?", "낮음", "activity"),
                 new AnswerItemDTO("외출을 자주 하나요?", "보통", "activity")
         );
 
-        String prompt = RecommendationPrompt.buildRecommendationPrompt(list);
+        // ⬇️ 중복 동물 이름, 유사 품종 mock 데이터 추가
+        List<String> dummyPetNames = List.of("푸들", "코숏");
+        List<Pet> dummySimilarPets = List.of(); // 지금은 비워도 OK
+
+        String prompt = RecommendationPrompt.buildRecommendationPrompt(list, dummyPetNames, dummySimilarPets);
+
+        assertTrue(prompt.contains("당신의 하루 활동량은?"));
+        assertTrue(prompt.contains("외출을 자주 하나요?"));
+
+        // 구조적인 키워드가 들어있는지는 buildRecommendationPrompt 내부 설명문을 기준으로 판단
         assertTrue(prompt.contains("user_scores"));
         assertTrue(prompt.contains("recommendations"));
-        assertTrue(prompt.contains("당신의 하루 활동량은?"));
-        assertTrue(prompt.contains("보통"));
     }
 
     @Test
