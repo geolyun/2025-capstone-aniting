@@ -35,8 +35,12 @@ public class RecommendationPrompt {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("당신은 반려동물 추천 전문가입니다. 아래 사용자 응답을 참고하여 성향 점수(activity, sociability, care, emotional_bond, environment, routine)를 평가한 뒤, 유사한 반려동물 3종을 추천하세요.\n")
-                .append("각 반려동물은 반드시 대한민국에서 실내 사육이 합법적이며 일반적으로 기르는 종 중에서 선택해야 합니다.\n")
+        sb.append("당신은 반려동물 추천 전문가입니다. 아래는 사용자의 질문과 그에 대한 응답입니다. 응답은 서술형 또는 짧은 문장입니다.\n")
+                .append("이를 참고하여 사용자의 성향 점수(activity, sociability, care, emotional_bond, environment, routine)를 1~5점으로 평가하세요.\n")
+                .append("💡 점수화 가이드:\n")
+                .append("- 응답이 적극적일수록 높은 점수 (4~5점), 소극적이거나 모호할수록 낮은 점수 (1~2점)\n")
+                .append("- 가능한 점수는 2~3점 중심 분포를 권장합니다.\n")
+                .append("- 1개의 질문은 1~2개 기준에 반영되므로, 카테고리별로 나누어 평균 점수를 도출하세요.")
                 .append("다음은 이전 추천에서 제외해야 할 반려동물 목록입니다:\n");
 
         for (String name : excludedPetNames) {
