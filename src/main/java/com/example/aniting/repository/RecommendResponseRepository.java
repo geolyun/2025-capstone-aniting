@@ -12,6 +12,7 @@ public interface RecommendResponseRepository extends JpaRepository<RecommendResp
 
 	void deleteByUsersId(String usersId);
 
+  
 	List<RecommendResponse> findAllByUsersIdLike(String prefix);
 
 	// 사용자 ID로 전체 응답 가져오기

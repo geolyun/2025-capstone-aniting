@@ -32,12 +32,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AdminSampleServiceImpl implements AdminSampleService {
 
+  
     private final PetSeedService petSeedService;
     private final RecommendationService recommendationService;
     private final OpenAiClient openAiClient;
     private final UsersRepository usersRepository;
     private static final Semaphore semaphore = new Semaphore(5);
 
+  
     @Async
     public CompletableFuture<Boolean> generateOneSampleAsync() {
         try {
@@ -138,7 +140,8 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 
     }
 
-    private boolean callWithRetryAndDelay() {
+	
+	private boolean callWithRetryAndDelay() {
 
         int retry = 0;
         while (retry < 3) {
@@ -146,8 +149,10 @@ public class AdminSampleServiceImpl implements AdminSampleService {
                 boolean result = generateOneSample();
                 Thread.sleep(500);
 
+                
                 return result;
 
+              
             } catch (RuntimeException e) {
                 if (e.getMessage().contains("429")) {
                     retry++;
@@ -155,7 +160,9 @@ public class AdminSampleServiceImpl implements AdminSampleService {
                     try {
                         Thread.sleep(1000L * (retry + 1));
                     } catch (InterruptedException ignored) {}
+
                 }
+
                 else {
                     throw e; // 429 외 오류는 즉시 터뜨림
                 }
@@ -167,6 +174,8 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 
         throw new RuntimeException("GPT 요청 실패: 429 재시도 초과");
 
+
     }
+
 
 }
