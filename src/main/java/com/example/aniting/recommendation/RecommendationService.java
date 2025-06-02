@@ -1,13 +1,13 @@
 package com.example.aniting.recommendation;
 
+import com.example.aniting.ai.OpenAiClient;
 import com.example.aniting.dto.AnswerItemDTO;
 import com.example.aniting.dto.AnswerRequestDTO;
 import com.example.aniting.dto.RecommendationDTO;
 import com.example.aniting.dto.RecommendationResultDTO;
 import com.example.aniting.entity.*;
-import com.example.aniting.ai.OpenAiClient;
-import com.example.aniting.recommendation.RecommendationPrompt;
 import com.example.aniting.repository.*;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,180 +27,152 @@ public class RecommendationService {
     private final PetRepository petRepository;
     private final CategoryRepository categoryRepository;
 
-
     public List<AnswerItemDTO> generateQuestionItems() {
         String prompt = RecommendationPrompt.buildQuestionPrompt();
         String gptResponse = openAiClient.callGPTAPI(prompt);
-        return RecommendationPrompt.parseQuestionItems(gptResponse); // category 포함해서 파싱
+        return RecommendationPrompt.parseQuestionItems(gptResponse);
     }
 
-    public RecommendationResultDTO getRecommendations(String userId, AnswerRequestDTO responses) {
-        String prompt = generateRecommendationPrompt(responses.getAnswers());        String gptResponse = openAiClient.callGPTAPI(prompt);
+    public RecommendationResultDTO getRecommendations(String userId, AnswerRequestDTO requestDto) {
+        initCategoryDataIfEmpty();
+        List<AnswerItemDTO> answers = requestDto.getAnswers();
+        List<String> excludedPetNames = petRepository.findAllPetNames();
+        List<Pet> similarPets = fetchSimilarPets(excludedPetNames);
+
+        String prompt = RecommendationPrompt.buildRecommendationPrompt(answers, excludedPetNames, similarPets);
+        String gptResponse = openAiClient.callGPTAPI(prompt);
         RecommendationResultDTO result = RecommendationPrompt.parseGptResponse(gptResponse);
 
-        saveAllRecommendationData(userId, responses, result, prompt, gptResponse);
+        saveAllRecommendationData(userId, answers, result, prompt, gptResponse);
         return result;
     }
 
     public void saveAllRecommendationData(
             String userId,
-            AnswerRequestDTO requestDto,
-            RecommendationResultDTO resultDto,
+            List<AnswerItemDTO> answers,
+            RecommendationResultDTO result,
             String prompt,
-            String aiResponse
+            String gptResponse
     ) {
-        initCategoryDataIfEmpty();
-        saveRecommendResponses(userId, requestDto);
-        saveUserScores(userId, resultDto.getUserScores());
-        saveRecommendedPets(resultDto.getRecommendations());
-        saveRecommendHistory(userId, resultDto.getRecommendations());
-        saveRecommendLog(userId, prompt, aiResponse);
+        saveRecommendResponses(userId, answers);
+        saveUserScores(userId, result.getUserScores());
+        saveRecommendHistory(userId, result.getRecommendations());
+        saveRecommendLog(userId, prompt, gptResponse);
     }
 
-    private void saveRecommendResponses(String usersId, AnswerRequestDTO requestDto) {
-        List<RecommendResponse> responses = new ArrayList<>();
+    private void saveRecommendResponses(String userId, List<AnswerItemDTO> answers) {
+        List<RecommendResponse> list = new ArrayList<>();
         int order = 1;
         LocalDateTime now = LocalDateTime.now();
 
-        for (AnswerItemDTO item : requestDto.getAnswers()) {
-            RecommendResponse res = new RecommendResponse();
-            res.setUsersId(usersId);
-            res.setQuestionOrder(order++);
-            res.setQuestion(item.getQuestion());
-            res.setCategory(item.getCategory());
-            res.setAnswer(item.getAnswer());
-            res.setCreatedAt(now);
-            responses.add(res);
+        for (AnswerItemDTO item : answers) {
+            RecommendResponse r = new RecommendResponse();
+            r.setUsersId(userId);
+            r.setQuestionOrder(order++);
+            r.setQuestion(item.getQuestion());
+            r.setCategory(item.getCategory());
+            r.setAnswer(item.getAnswer());
+            r.setCreatedAt(now);
+            list.add(r);
         }
-
-        recommendResponseRepository.saveAll(responses);
+        recommendResponseRepository.saveAll(list);
     }
 
-    private void saveUserScores(String usersId, Map<String, Integer> scores) {
+    private void saveUserScores(String userId, Map<String, Integer> scores) {
         Map<String, Long> categoryMap = Map.of(
-                "activity", 1L,
-                "sociability", 2L,
-                "care", 3L,
-                "emotional_bond", 4L,
-                "environment", 5L,
-                "routine", 6L
+                "activity", 1L, "sociability", 2L, "care", 3L,
+                "emotional_bond", 4L, "environment", 5L, "routine", 6L
         );
-
-        List<Score> scoreEntities = new ArrayList<>();
+        List<Score> scoreList = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : scores.entrySet()) {
             Score s = new Score();
-            s.setUsersId(usersId);
+            s.setUsersId(userId);
             s.setCategoryId(categoryMap.get(entry.getKey()));
             s.setScoreValue(entry.getValue());
-            scoreEntities.add(s);
+            scoreList.add(s);
         }
-
-        scoreRepository.saveAll(scoreEntities);
+        scoreRepository.saveAll(scoreList);
     }
 
-    private void saveRecommendedPets(List<RecommendationDTO> recommendations) {
-        for (RecommendationDTO rec : recommendations) {
-            String name = rec.getAnimal().trim();
-            if (petRepository.findByPetNm(name).isEmpty()) {
-                Pet pet = new Pet();
-                pet.setPetNm(name);
-                pet.setSpecies(rec.getSpecies());
-                pet.setBreed(rec.getBreed());
-                pet.setCareLevel(
-                        List.of("낮음", "중간", "높음").contains(rec.getCareLevel()) ? rec.getCareLevel() : "중간"
-                );
-
-                String isSpecial = rec.getIsSpecial();
-                pet.setIsSpecial((isSpecial != null && (isSpecial.equalsIgnoreCase("yes") || isSpecial.equalsIgnoreCase("y"))) ? "Y" : "N");
-
-                pet.setDescription(rec.getReason());
-                pet.setCategoryIds("1,2,3,4,5,6");
-                pet.setPersonalityTags(null);
-                pet.setTraitScores(rec.getTraitScores());
-
-                petRepository.save(pet);
-            }
-        }
-    }
-
-    private void saveRecommendHistory(String usersId, List<RecommendationDTO> recs) {
+    private void saveRecommendHistory(String userId, List<RecommendationDTO> recs) {
         if (recs.size() < 3) return;
-
-        RecommendHistory history = new RecommendHistory();
-        history.setUsersId(usersId);
-        history.setTop1PetId(resolvePetByName(recs.get(0).getAnimal()));
-        history.setTop2PetId(resolvePetByName(recs.get(1).getAnimal()));
-        history.setTop3PetId(resolvePetByName(recs.get(2).getAnimal()));
-
-        StringBuilder aiReasonBuilder = new StringBuilder();
-        for (int i = 0; i < 3; i++) {
-            RecommendationDTO rec = recs.get(i);
-            aiReasonBuilder.append(rec.getRank())
-                    .append("위: ").append(rec.getAnimal())
-                    .append(" - ").append(rec.getReason());
-            if (i != 2) aiReasonBuilder.append(" / ");
-        }
-        history.setAiReason(aiReasonBuilder.toString());
-        history.setCreatedAt(LocalDateTime.now());
-
-        recommendHistoryRepository.save(history);
+        RecommendHistory h = new RecommendHistory();
+        h.setUsersId(userId);
+        h.setTop1PetId(resolvePetByName(recs.get(0).getAnimal()));
+        h.setTop2PetId(resolvePetByName(recs.get(1).getAnimal()));
+        h.setTop3PetId(resolvePetByName(recs.get(2).getAnimal()));
+        h.setAiReason(recs.get(0).getReason() + " / " + recs.get(1).getReason() + " / " + recs.get(2).getReason());
+        h.setCreatedAt(LocalDateTime.now());
+        recommendHistoryRepository.save(h);
     }
 
-    private void saveRecommendLog(String usersId, String prompt, String aiResponse) {
+    private void saveRecommendLog(String userId, String prompt, String response) {
         RecommendLog log = new RecommendLog();
-        log.setUsersId(usersId);
+        log.setUsersId(userId);
         log.setAiPrompt(prompt);
-        log.setAiResponse(aiResponse);
+        log.setAiResponse(response);
         log.setCreatedAt(LocalDateTime.now());
         recommendLogRepository.save(log);
     }
 
-    // 카테고리 점수 부여 기준 데이터가 비어있으면 DB에 데이터 삽입
-    @Transactional
-    synchronized void initCategoryDataIfEmpty() {
-        if (!categoryRepository.existsById(1L)) {
-            List<Category> categories = List.of(
-                new Category("activity", "활동성", "하루의 에너지 소비량 및 야외 활동 선호도"),
-                new Category("sociability", "사회성", "다른 사람/동물과의 교류 능력"),
-                new Category("care", "돌봄 의지", "돌봄 시간과 정성에 대한 의지"),
-                new Category("emotional_bond", "정서적 교감", "감정 공유와 유대감 선호도"),
-                new Category("environment", "환경 적합성", "생활 공간 조건 및 특성"),
-                new Category("routine", "일상 루틴", "일과 패턴의 안정성")
-            );
-            categoryRepository.saveAll(categories);
-        }
-    }
-
-    public String generateRecommendationPrompt(List<AnswerItemDTO> answers) {
-        // 1. 이미 저장된 반려동물 이름 리스트 (중복 방지용)
-        List<String> previousPetNames = petRepository.findAllPetNames();
-
-        // 2. 중복은 아니지만 종/품종이 유사한 반려동물 리스트 수집
-        Set<Pet> similarPets = new HashSet<>();
-        for (String petNm : previousPetNames) {
-            petRepository.findByPetNm(petNm).ifPresent(originalPet -> {
-                List<Pet> similarList = petRepository.findBySpeciesOrBreed(
-                        originalPet.getSpecies(), originalPet.getBreed()
-                );
-                for (Pet candidate : similarList) {
-                    // 이름이 동일하면 제외 (중복 방지)
-                    if (!previousPetNames.contains(candidate.getPetNm())) {
-                        similarPets.add(candidate);
+    private List<Pet> fetchSimilarPets(List<String> petNames) {
+        Set<Pet> similarSet = new HashSet<>();
+        for (String name : petNames) {
+            petRepository.findByPetNm(name).ifPresent(original -> {
+                List<Pet> similar = petRepository.findBySpeciesOrBreed(original.getSpecies(), original.getBreed());
+                for (Pet p : similar) {
+                    if (!petNames.contains(p.getPetNm())) {
+                        similarSet.add(p);
                     }
                 }
             });
         }
-
-        // 3. 프롬프트 생성 (중복 제외 + 유사 성향 정보 포함)
-        return RecommendationPrompt.buildRecommendationPrompt(
-                answers,
-                previousPetNames,
-                new ArrayList<>(similarPets)
-        );
+        return new ArrayList<>(similarSet);
     }
 
     private Pet resolvePetByName(String name) {
         return petRepository.findByPetNm(name.trim())
-                .orElseThrow(() -> new IllegalArgumentException("❗ 해당 이름의 Pet을 찾을 수 없습니다: " + name));
+                .orElseThrow(() -> new IllegalArgumentException("❗ Pet not found: " + name));
+    }
+
+    @PostConstruct
+    public void init() {
+        initCategoryDataIfEmpty();
+        initPetDataIfEmpty(); // ✅ 신규 추가
+    }
+
+    @Transactional
+    public void initPetDataIfEmpty() {
+        if (petRepository.count() == 0) {
+            List<Pet> pets = new ArrayList<>();
+            pets.add(Pet.builder()
+                    .petNm("햄스터")
+                    .species("포유류")
+                    .breed("골든")
+                    .personalityTags("소심함, 야행성, 혼자 지냄")
+                    .careLevel("낮음")
+                    .isSpecial("N")
+                    .categoryIds("1,2,3,4,5,6")
+                    .traitScores("2,1,2,2,4,3")
+                    .description("공간을 많이 차지하지 않고 관리가 쉬운 소형 반려동물입니다.")
+                    .build());
+
+            petRepository.saveAll(pets);
+        }
+    }
+
+    @Transactional
+    void initCategoryDataIfEmpty() {
+        if (!categoryRepository.existsById(1L)) {
+            List<Category> list = List.of(
+                    new Category("activity", "활동성", "하루의 에너지 소비량 및 야외 활동 선호도"),
+                    new Category("sociability", "사회성", "다른 사람/동물과의 교류 능력"),
+                    new Category("care", "돌봄 의지", "돌봄 시간과 정성에 대한 의지"),
+                    new Category("emotional_bond", "정서적 교감", "감정 공유와 유대감 선호도"),
+                    new Category("environment", "환경 적합성", "생활 공간 조건 및 특성"),
+                    new Category("routine", "일상 루틴", "일과 패턴의 안정성")
+            );
+            categoryRepository.saveAll(list);
+        }
     }
 }
