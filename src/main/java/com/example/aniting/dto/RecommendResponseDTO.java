@@ -15,7 +15,7 @@ public class RecommendResponseDTO {
     private String usersId;
     private Integer questionOrder;
     private String question;
-    private String category;
     private String answer;
+    private String category;
     private LocalDateTime createdAt;
 }
