@@ -9,6 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Semaphore;
 
 import com.example.aniting.petseed.PetSeedService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -28,57 +29,56 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AdminSampleServiceImpl implements AdminSampleService {
 
-	@Autowired
-	private RecommendationService recommendationService;
-	
-	@Autowired
-    private OpenAiClient openAiClient;
+  
+    private final PetSeedService petSeedService;
+    private final RecommendationService recommendationService;
+    private final OpenAiClient openAiClient;
+    private final UsersRepository usersRepository;
+    private static final Semaphore semaphore = new Semaphore(5);
 
-    @Autowired
-    private PetSeedService petSeedService;
-    
-	@Autowired
-    private UsersRepository usersRepository;
-	
-	private static final Semaphore semaphore = new Semaphore(5);
-	
-	@Async
-	public CompletableFuture<Boolean> generateOneSampleAsync() {
-		try {
-			
-            semaphore.acquire(); // 동시 요청 제한
+  
+    @Async
+    public CompletableFuture<Boolean> generateOneSampleAsync() {
+        try {
+            semaphore.acquire();
             boolean result = callWithRetryAndDelay();
             return CompletableFuture.completedFuture(result);
-            
         } catch (Exception e) {
-        	
             log.error("비동기 샘플 생성 중 예외 발생", e);
             return CompletableFuture.completedFuture(false);
-            
         } finally {
             semaphore.release();
         }
-	}
-	
-	@Override
+    }
+
+    // ▶ NullPointerException을 막으려면 절대 null을 반환하지 말고, 반드시 completedFuture를 리턴해야 합니다.
+    @Async
+    public CompletableFuture<Boolean> generateOnePetAsync() {
+        try {
+            // petSeedService.generateAndSavePets() 내부에서 이미 중복 체크 후 저장합니다.
+            petSeedService.generateAndSavePets();
+            log.info("✅ generateOnePetAsync(): 반려동물 데이터 생성 성공");
+            return CompletableFuture.completedFuture(true);
+        } catch (Exception e) {
+            log.error("❌ generateOnePetAsync(): 반려동물 생성 실패", e);
+            return CompletableFuture.completedFuture(false);
+        }
+    }
+
+    @Override
     public String generateMultipleSamples(int count) {
-
-        petSeedService.generateAndSavePets();
-		
         int success = 0;
-
         for (int i = 0; i < count; i++) {
-            boolean ok = generateOneSample();
+            boolean ok = generateOneSample(); // 기존 generateOneSample() 메서드
             if (ok) success++;
         }
-
         return success + "개 샘플 데이터 생성 완료";
-        
     }
-	
-	private boolean generateOneSample() {
+
+    private boolean generateOneSample() {
         try {
             petSeedService.generateAndSavePets();
 
@@ -118,11 +118,11 @@ public class AdminSampleServiceImpl implements AdminSampleService {
             log.error("[샘플 생성 실패]", e);
             return false;
         }
-        
+
     }
 
-	private void registerSampleUser(String userId) {
-		
+    private void registerSampleUser(String userId) {
+
         Optional<Users> existing = usersRepository.findByUsersId(userId);
         if (existing.isPresent()) return;
 
@@ -137,19 +137,22 @@ public class AdminSampleServiceImpl implements AdminSampleService {
         usersRepository.save(user);
 
         log.info("➕ 샘플 유저 등록 완료: {}", userId);
-        
+
     }
+
 	
 	private boolean callWithRetryAndDelay() {
-		
+
         int retry = 0;
         while (retry < 3) {
             try {
                 boolean result = generateOneSample();
                 Thread.sleep(500);
+
                 
                 return result;
-                
+
+              
             } catch (RuntimeException e) {
                 if (e.getMessage().contains("429")) {
                     retry++;
@@ -157,7 +160,9 @@ public class AdminSampleServiceImpl implements AdminSampleService {
                     try {
                         Thread.sleep(1000L * (retry + 1));
                     } catch (InterruptedException ignored) {}
-                } 
+
+                }
+
                 else {
                     throw e; // 429 외 오류는 즉시 터뜨림
                 }
@@ -168,13 +173,9 @@ public class AdminSampleServiceImpl implements AdminSampleService {
         }
 
         throw new RuntimeException("GPT 요청 실패: 429 재시도 초과");
-        
+
+
     }
 
-	@Override
-	public CompletableFuture<Boolean> generateOnePetAsync() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+
 }

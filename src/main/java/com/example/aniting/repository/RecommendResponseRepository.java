@@ -18,8 +18,7 @@ public interface RecommendResponseRepository extends JpaRepository<RecommendResp
 	// 사용자 ID로 전체 응답 가져오기
 	List<RecommendResponse> findByUsersId(String usersId);
 
-	
 	@Query("SELECT COUNT(DISTINCT r.usersId) FROM RecommendResponse r")
 	long countDistinctUsersId();
-	
+
 }
