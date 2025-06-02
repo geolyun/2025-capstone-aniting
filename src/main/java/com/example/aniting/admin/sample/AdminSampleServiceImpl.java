@@ -80,7 +80,7 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 
             String questionPrompt = RecommendationPrompt.buildQuestionPrompt();
             String rawQuestions = openAiClient.callGPTAPI(questionPrompt);
-            List<AnswerItemDTO> questionItems = RecommendationPrompt.parseQuestionItems(rawQuestions); // 🔥 변경 포인트
+            List<AnswerItemDTO> questionItems = RecommendationPrompt.parseQuestionItems(rawQuestions);
 
             List<AnswerItemDTO> answerItems = new ArrayList<>();
             for (AnswerItemDTO qItem : questionItems) {
@@ -95,6 +95,7 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 
             AnswerRequestDTO request = new AnswerRequestDTO();
             request.setAnswers(answerItems);
+
             RecommendationResultDTO result = recommendationService.getRecommendations(userId, request);
 
             String top1 = result.getRecommendations().stream()
