@@ -152,5 +152,13 @@ public class AdminUserServiceImpl implements AdminUserService {
         // 2. 부모 테이블 삭제
         usersRepository.delete(user);
     }
+    
+    @Override
+    @Transactional
+    public void deleteUsers(List<Long> usersNos) {
+        for (Long usersNo : usersNos) {
+            deleteUser(usersNo);
+        }
+    }
 
 }

@@ -61,6 +61,7 @@ public class AdminPetServiceImpl implements AdminPetService {
 		pet.setCareLevel(petDTO.getCareLevel());
 		pet.setIsSpecial(petDTO.getIsSpecial());
 		pet.setCategoryIds(petDTO.getCategoryIds());
+		pet.setTraitScores(petDTO.getTraitScores());
 		pet.setDescription(petDTO.getDescription());
 
 		Pet updatedPet = petRepository.save(pet);
@@ -73,6 +74,13 @@ public class AdminPetServiceImpl implements AdminPetService {
             throw new IllegalArgumentException("해당 반려동물을 찾을 수 없습니다. ID = " + petId);
         }
         petRepository.deleteById(petId);
+	}
+	
+	@Override
+	public void deletePets(List<Long> petIds) {
+	    for (Long petId : petIds) {
+	        deletePet(petId);
+	    }
 	}
 	
 	@Override

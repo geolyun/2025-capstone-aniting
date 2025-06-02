@@ -1,6 +1,11 @@
 package com.example.aniting.admin.sample;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,8 +19,34 @@ public class AdminSampleController {
 	private AdminSampleService adminSampleService;
 	
 	@PostMapping("/generate")
-    public String generateSample(@RequestParam(defaultValue = "1") int count) {
-        return adminSampleService.generateMultipleSamples(count);
+    public ResponseEntity<?> generateSamplesAsync(@RequestParam int count) {
+        List<CompletableFuture<Boolean>> futures = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            futures.add(adminSampleService.generateOneSampleAsync());
+        }
+
+        // 병렬 작업 완료 대기
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        long successCount = futures.stream().filter(f -> f.join()).count();
+        return ResponseEntity.ok("생성 완료: " + successCount + "개");
     }
+	
+	@PostMapping("/generatePet")
+	public ResponseEntity<?> generatePetsAsync(@RequestParam int count) {
+	    List<CompletableFuture<Boolean>> futures = new ArrayList<>();
+
+	    for (int i = 0; i < count; i++) {
+	        futures.add(adminSampleService.generateOnePetAsync()); // 비동기 호출
+	    }
+
+	    // 병렬 작업 완료 대기
+	    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+	    long successCount = futures.stream().filter(f -> f.join()).count();
+	    return ResponseEntity.ok("생성 완료: " + successCount + "개");
+	}
+
 	
 }
