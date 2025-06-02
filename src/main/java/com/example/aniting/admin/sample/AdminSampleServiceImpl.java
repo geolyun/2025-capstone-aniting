@@ -170,5 +170,11 @@ public class AdminSampleServiceImpl implements AdminSampleService {
         throw new RuntimeException("GPT 요청 실패: 429 재시도 초과");
         
     }
+
+	@Override
+	public CompletableFuture<Boolean> generateOnePetAsync() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

@@ -33,4 +33,20 @@ public class AdminSampleController {
         return ResponseEntity.ok("생성 완료: " + successCount + "개");
     }
 	
+	@PostMapping("/generatePet")
+	public ResponseEntity<?> generatePetsAsync(@RequestParam int count) {
+	    List<CompletableFuture<Boolean>> futures = new ArrayList<>();
+
+	    for (int i = 0; i < count; i++) {
+	        futures.add(adminSampleService.generateOnePetAsync()); // 비동기 호출
+	    }
+
+	    // 병렬 작업 완료 대기
+	    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+	    long successCount = futures.stream().filter(f -> f.join()).count();
+	    return ResponseEntity.ok("생성 완료: " + successCount + "개");
+	}
+
+	
 }
