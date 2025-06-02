@@ -8,6 +8,4 @@ public interface AdminSampleService {
 	public CompletableFuture<Boolean> generateOneSampleAsync();
 	public CompletableFuture<Boolean> generateOnePetAsync();
 
-	public CompletableFuture<Boolean> generateOneSampleAsync();
-
 }
