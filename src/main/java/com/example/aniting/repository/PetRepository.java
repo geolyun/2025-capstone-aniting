@@ -17,6 +17,12 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
     @Query("SELECT p.petNm FROM Pet p")
     List<String> findAllPetNames();
 
+    @Query("SELECT DISTINCT p.petNm FROM Pet p")
+    Set<String> findAllPetNamesSet();
+
+    // 종+품종으로 쿼리
+    List<Pet> findBySpeciesAndBreed(String species, String breed);
+
     List<Pet> findBySpeciesOrBreed(String species, String breed);
 
 }
