@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.example.aniting.petseed.PetSeedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +32,17 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 	
 	@Autowired
     private OpenAiClient openAiClient;
+
+    @Autowired
+    private PetSeedService petSeedService;
     
 	@Autowired
     private UsersRepository usersRepository;
 	
 	@Override
     public String generateMultipleSamples(int count) {
+
+        petSeedService.generateAndSavePets();
 		
         int success = 0;
 
@@ -50,8 +56,9 @@ public class AdminSampleServiceImpl implements AdminSampleService {
     }
 	
 	private boolean generateOneSample() {
-		
         try {
+            petSeedService.generateAndSavePets();
+
             String userId = "gpt_user_" + UUID.randomUUID().toString().substring(0, 8);
             registerSampleUser(userId);
 
