@@ -115,7 +115,7 @@ public class AdminSampleServiceImpl implements AdminSampleService {
             AnswerRequestDTO request = new AnswerRequestDTO();
             request.setAnswers(answerItems);
 
-            RecommendationResultDTO result = recommendationService.getRecommendations(userId, request);
+            RecommendationResultDTO result = recommendationService.getRecommendations(userId, request.getAnswers());
 
             String top1 = result.getRecommendations().stream()
                     .filter(r -> r.getRank() == 1)

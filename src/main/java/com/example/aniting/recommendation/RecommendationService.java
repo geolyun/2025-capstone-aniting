@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,18 +34,65 @@ public class RecommendationService {
         return RecommendationPrompt.parseQuestionItems(gptResponse);
     }
 
-    public RecommendationResultDTO getRecommendations(String userId, AnswerRequestDTO requestDto) {
-        initCategoryDataIfEmpty();
-        List<AnswerItemDTO> answers = requestDto.getAnswers();
-        List<String> excludedPetNames = petRepository.findAllPetNames();
-        List<Pet> similarPets = fetchSimilarPets(excludedPetNames);
-
-        String prompt = RecommendationPrompt.buildRecommendationPrompt(answers, excludedPetNames, similarPets);
+    public RecommendationResultDTO getRecommendations(String userId, List<AnswerItemDTO> answers) {
+        // 1) GPT에게 사용자 점수 요청 (정적 메서드 호출)
+        String prompt = RecommendationPrompt.buildRecommendationPrompt(answers);
         String gptResponse = openAiClient.callGPTAPI(prompt);
-        RecommendationResultDTO result = RecommendationPrompt.parseGptResponse(gptResponse);
 
-        saveAllRecommendationData(userId, answers, result, prompt, gptResponse);
-        return result;
+        RecommendationResultDTO resultDto = RecommendationPrompt.parseGptResponse(gptResponse);
+
+        // 2) 사용자 점수 Map → 벡터
+        Map<String, Integer> userScoresMap = resultDto.getUserScores();
+        List<Integer> userVector = Arrays.asList(
+                userScoresMap.getOrDefault("activity", 0),
+                userScoresMap.getOrDefault("sociability", 0),
+                userScoresMap.getOrDefault("care", 0),
+                userScoresMap.getOrDefault("emotional_bond", 0),
+                userScoresMap.getOrDefault("environment", 0),
+                userScoresMap.getOrDefault("routine", 0)
+        );
+
+        // 3) DB에서 모든 Pet 불러오기
+        List<Pet> allPets = petRepository.findAll();
+
+        // 4) Pet별 거리 계산
+        List<PetDistance> distances = new ArrayList<>();
+        for (Pet pet : allPets) {
+            List<Integer> petVector = parseTraitScores(pet.getTraitScores());
+            double dist = euclideanDistance(userVector, petVector);
+            distances.add(new PetDistance(pet, dist));
+        }
+
+        // 5) 거리 오름차순 정렬 → 상위 3개 Pet 선택
+        List<Pet> top3 =
+                distances.stream()
+                        .sorted(Comparator.comparingDouble(PetDistance::getDistance))
+                        .limit(3)
+                        .map(PetDistance::getPet)
+                        .collect(Collectors.toList());
+
+        // 6) 상위 3개 Pet을 RecommendationDTO로 변환
+        List<RecommendationDTO> recList = new ArrayList<>();
+        for (int i = 0; i < top3.size(); i++) {
+            Pet p = top3.get(i);
+            RecommendationDTO dto = new RecommendationDTO();
+            dto.setRank(i + 1);
+            dto.setAnimal(p.getPetNm());
+            dto.setSpecies(p.getSpecies());
+            dto.setBreed(p.getBreed());
+            dto.setCareLevel(p.getCareLevel());
+            dto.setIsSpecial(p.getIsSpecial());
+            dto.setTraitScores(p.getTraitScores());
+            dto.setReason("자동 유사도 추천 (거리="
+                    + String.format("%.2f", distances.get(i).getDistance()) + ")");
+            recList.add(dto);
+        }
+
+        // 7) 최종 DTO 구성 후 반환
+        RecommendationResultDTO finalResult = new RecommendationResultDTO();
+        finalResult.setUserScores(userScoresMap);
+        finalResult.setRecommendations(recList);
+        return finalResult;
     }
 
     public void saveAllRecommendationData(
@@ -175,4 +223,47 @@ public class RecommendationService {
             categoryRepository.saveAll(list);
         }
     }
+
+    private List<Integer> parseTraitScores(String ts) {
+        if (ts == null || ts.isBlank()) {
+            return Arrays.asList(0, 0, 0, 0, 0, 0);
+        }
+        String[] parts = ts.split(",");
+        List<Integer> list = new ArrayList<>();
+        for (String part : parts) {
+            try {
+                list.add(Integer.parseInt(part.trim()));
+            } catch (NumberFormatException e) {
+                list.add(0);
+            }
+        }
+        // 6개 미만이면 0으로 패딩, 6개 초과 면 잘라서 6개만
+        while (list.size() < 6) {
+            list.add(0);
+        }
+        return list.subList(0, 6);
+    }
+
+    /** 두 벡터의 유클리디안 거리 계산 */
+    private double euclideanDistance(List<Integer> a, List<Integer> b) {
+        double sum = 0;
+        for (int i = 0; i < 6; i++) {
+            double diff = a.get(i) - b.get(i);
+            sum += diff * diff;
+        }
+        return Math.sqrt(sum);
+    }
+
+    /** Pet 객체와 거리(double)를 묶어두는 내부 클래스 */
+    private static class PetDistance {
+        private final Pet pet;
+        private final double distance;
+        public PetDistance(Pet pet, double distance) {
+            this.pet = pet;
+            this.distance = distance;
+        }
+        public Pet getPet() { return pet; }
+        public double getDistance() { return distance; }
+    }
 }
+
