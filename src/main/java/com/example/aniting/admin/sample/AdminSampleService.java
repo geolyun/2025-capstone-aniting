@@ -7,5 +7,6 @@ public interface AdminSampleService {
 	public String generateMultipleSamples(int count);
 	public CompletableFuture<Boolean> generateOneSampleAsync();
 	public CompletableFuture<Boolean> generateOnePetAsync();
+	public CompletableFuture<Boolean> generateOneSpecialPetAsync();
 
 }

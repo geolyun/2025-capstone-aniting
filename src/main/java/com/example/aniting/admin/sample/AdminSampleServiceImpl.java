@@ -60,10 +60,22 @@ public class AdminSampleServiceImpl implements AdminSampleService {
         try {
             // petSeedService.generateAndSavePets() 내부에서 이미 중복 체크 후 저장합니다.
             petSeedService.generateAndSavePets();
-            log.info("✅ generateOnePetAsync(): 반려동물 데이터 생성 성공");
+            log.info("generateOnePetAsync(): 반려동물 데이터 생성 성공");
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
-            log.error("❌ generateOnePetAsync(): 반려동물 생성 실패", e);
+            log.error("generateOnePetAsync(): 반려동물 생성 실패", e);
+            return CompletableFuture.completedFuture(false);
+        }
+    }
+    
+    @Async
+    public CompletableFuture<Boolean> generateOneSpecialPetAsync() {
+        try {
+            petSeedService.generateAndSaveSpecialPets();
+            log.info("generateOneSpecialPetAsync(): 특수동물 데이터 생성 성공");
+            return CompletableFuture.completedFuture(true);
+        } catch (Exception e) {
+            log.error("generateOneSpecialPetAsync(): 특수동물 생성 실패", e);
             return CompletableFuture.completedFuture(false);
         }
     }
