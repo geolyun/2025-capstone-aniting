@@ -15,6 +15,9 @@
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="pet-tab" data-bs-toggle="tab" data-bs-target="#pet" type="button" role="tab">반려동물 데이터 생성</button>
         </li>
+        <li class="nav-item" role="presentation">
+	      <button class="nav-link" id="special-pet-tab" data-bs-toggle="tab" data-bs-target="#special-pet" type="button" role="tab">특수동물 데이터 생성</button>
+	    </li>
       </ul>
 
       <div class="tab-content" id="sampleTabContent">
@@ -50,6 +53,22 @@
             </div>
           </div>
         </div>
+        
+        <!-- 특수동물 데이터 생성 탭 -->
+	    <div class="tab-pane fade" id="special-pet" role="tabpanel">
+	      <div class="card">
+	        <div class="card-body">
+	          <p>아래 버튼을 클릭하면 GPT를 통해 <strong>특수동물 데이터</strong>를 생성합니다. (곤충/장난감/가상동물 제외)</p>
+	          <div class="d-flex flex-column gap-2" style="max-width: 150px;">
+	            <button class="btn btn-outline-primary" onclick="generateSpecialPet(1)">1개 생성</button>
+	            <button class="btn btn-outline-success" onclick="generateSpecialPet(10)">10개 생성</button>
+	            <button class="btn btn-outline-warning" onclick="generateSpecialPet(50)">50개 생성</button>
+	            <button class="btn btn-outline-danger" onclick="generateSpecialPet(100)">100개 생성</button>
+	          </div>
+	          <div id="specialPetStatus" class="mt-3 fw-bold alert alert-info d-none"></div>
+	        </div>
+	      </div>
+	    </div>
 
       </div>
     </div>
@@ -83,6 +102,22 @@
         alert(res);
       }).fail(function () {
         $("#petStatus").removeClass().addClass("mt-3 fw-bold alert alert-danger").text("오류 발생").removeClass("d-none");
+        alert("오류 발생");
+      }).always(function () {
+        $("button").prop("disabled", false);
+      });
+    }
+  }
+  
+  function generateSpecialPet(count) {
+    if (confirm(`${count}개의 특수동물 데이터를 생성하시겠습니까?`)) {
+      $("#specialPetStatus").removeClass().addClass("mt-3 fw-bold alert alert-info").text("생성 중입니다...").removeClass("d-none");
+      $("button").prop("disabled", true);
+      $.post("/api/admin/sample/generateSpecialPet?count=" + count, function (res) {
+        $("#specialPetStatus").removeClass().addClass("mt-3 fw-bold alert alert-success").text(res).removeClass("d-none");
+        alert(res);
+      }).fail(function () {
+        $("#specialPetStatus").removeClass().addClass("mt-3 fw-bold alert alert-danger").text("오류 발생").removeClass("d-none");
         alert("오류 발생");
       }).always(function () {
         $("button").prop("disabled", false);

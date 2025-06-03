@@ -48,5 +48,18 @@ public class AdminSampleController {
 	    return ResponseEntity.ok("생성 완료: " + successCount + "개");
 	}
 
+	@PostMapping("/generateSpecialPet")
+	public ResponseEntity<?> generateSpecialPet(@RequestParam int count) {
+	    List<CompletableFuture<Boolean>> futures = new ArrayList<>();
+
+	    for (int i = 0; i < count; i++) {
+	        futures.add(adminSampleService.generateOneSpecialPetAsync());
+	    }
+
+	    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+	    long successCount = futures.stream().filter(CompletableFuture::join).count();
+	    return ResponseEntity.ok("생성 완료: " + successCount + "개");
+	}
 	
 }
