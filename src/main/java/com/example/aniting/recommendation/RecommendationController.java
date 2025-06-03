@@ -63,7 +63,7 @@ public class RecommendationController {
         }
 
         // 추천 결과 호출
-        RecommendationResultDTO result = recommendationService.getRecommendations(userId, answerRequestDTO);
+        RecommendationResultDTO result = recommendationService.getRecommendations(userId, answerRequestDTO.getAnswers());
         return ResponseEntity.ok(result);
     }
 
