@@ -77,15 +77,14 @@ public class AdminSampleServiceImpl implements AdminSampleService {
     }
 
     private boolean generateOneSample() {
-        try {
-            petSeedService.generateAndSavePets();
 
+        try {
             String userId = "gpt_user_" + UUID.randomUUID().toString().substring(0, 8);
             registerSampleUser(userId);
 
             String questionPrompt = RecommendationPrompt.buildQuestionPrompt();
             String rawQuestions = openAiClient.callGPTAPI(questionPrompt);
-            List<AnswerItemDTO> questionItems = RecommendationPrompt.parseQuestionItems(rawQuestions);
+            List<AnswerItemDTO> questionItems = RecommendationPrompt.parseQuestionItems(rawQuestions); // 🔥 변경 포인트
 
             List<AnswerItemDTO> answerItems = new ArrayList<>();
             for (AnswerItemDTO qItem : questionItems) {
@@ -100,7 +99,6 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 
             AnswerRequestDTO request = new AnswerRequestDTO();
             request.setAnswers(answerItems);
-
             RecommendationResultDTO result = recommendationService.getRecommendations(userId, request.getAnswers());
 
             String top1 = result.getRecommendations().stream()
