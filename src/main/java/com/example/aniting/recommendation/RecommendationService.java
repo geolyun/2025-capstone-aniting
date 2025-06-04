@@ -92,6 +92,9 @@ public class RecommendationService {
         RecommendationResultDTO finalResult = new RecommendationResultDTO();
         finalResult.setUserScores(userScoresMap);
         finalResult.setRecommendations(recList);
+
+        saveAllRecommendationData(userId, answers, finalResult, prompt, gptResponse);
+
         return finalResult;
     }
 
