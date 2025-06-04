@@ -32,12 +32,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AdminSampleServiceImpl implements AdminSampleService {
 
+  
     private final PetSeedService petSeedService;
     private final RecommendationService recommendationService;
     private final OpenAiClient openAiClient;
     private final UsersRepository usersRepository;
     private static final Semaphore semaphore = new Semaphore(5);
 
+  
     @Async
     public CompletableFuture<Boolean> generateOneSampleAsync() {
         try {
@@ -58,10 +60,22 @@ public class AdminSampleServiceImpl implements AdminSampleService {
         try {
             // petSeedService.generateAndSavePets() 내부에서 이미 중복 체크 후 저장합니다.
             petSeedService.generateAndSavePets();
-            log.info("✅ generateOnePetAsync(): 반려동물 데이터 생성 성공");
+            log.info("generateOnePetAsync(): 반려동물 데이터 생성 성공");
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
-            log.error("❌ generateOnePetAsync(): 반려동물 생성 실패", e);
+            log.error("generateOnePetAsync(): 반려동물 생성 실패", e);
+            return CompletableFuture.completedFuture(false);
+        }
+    }
+    
+    @Async
+    public CompletableFuture<Boolean> generateOneSpecialPetAsync() {
+        try {
+            petSeedService.generateAndSaveSpecialPets();
+            log.info("generateOneSpecialPetAsync(): 특수동물 데이터 생성 성공");
+            return CompletableFuture.completedFuture(true);
+        } catch (Exception e) {
+            log.error("generateOneSpecialPetAsync(): 특수동물 생성 실패", e);
             return CompletableFuture.completedFuture(false);
         }
     }
@@ -136,7 +150,8 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 
     }
 
-    private boolean callWithRetryAndDelay() {
+	
+	private boolean callWithRetryAndDelay() {
 
         int retry = 0;
         while (retry < 3) {
@@ -144,8 +159,10 @@ public class AdminSampleServiceImpl implements AdminSampleService {
                 boolean result = generateOneSample();
                 Thread.sleep(500);
 
+                
                 return result;
 
+              
             } catch (RuntimeException e) {
                 if (e.getMessage().contains("429")) {
                     retry++;
@@ -153,7 +170,9 @@ public class AdminSampleServiceImpl implements AdminSampleService {
                     try {
                         Thread.sleep(1000L * (retry + 1));
                     } catch (InterruptedException ignored) {}
+
                 }
+
                 else {
                     throw e; // 429 외 오류는 즉시 터뜨림
                 }
@@ -165,6 +184,8 @@ public class AdminSampleServiceImpl implements AdminSampleService {
 
         throw new RuntimeException("GPT 요청 실패: 429 재시도 초과");
 
+
     }
+
 
 }
